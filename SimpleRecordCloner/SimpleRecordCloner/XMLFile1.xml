@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>martintmg.MSDYN.Tools.SimpleRecordCloner</id>
+    <version>0.1.0</version>
+    <title>CRM Simple Record Cloner</title>
+    <authors>Martin Tölk</authors>
+    <owners>Martin Tölk</owners>
+    <licenseUrl>https://github.com/martintmg/CRMSimpleRecordCloner/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/martintmg/CRMSimpleRecordCloner</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A Simple Plug-In to Clone CRM Records from one Environment to another. Just hit the  "Email a Link"  Button and copy/paste the URL.</description>
+    <summary>MIT License</summary>
+    <releaseNotes>2017-06-16 Initial Release</releaseNotes>
+    <copyright>Martin Tölk</copyright>
+    <language>en-US</language>
+    <tags>XrmToolBox Easy Record Cloner</tags>
+    <dependencies>
+      <dependency id="XrmToolBox" version="1.2016.3.30" />
+    </dependencies>
+    <files>
+      <file src="D:\Repos\MeinKram\CRMSimpleRecordCloner\SimpleRecordCloner\SimpleRecordCloner\bin\Debug\Plugins\SimpleRecordCloner.dll" target="lib\net452\Plugins" />
+    </files>
+  </metadata>
+</package>

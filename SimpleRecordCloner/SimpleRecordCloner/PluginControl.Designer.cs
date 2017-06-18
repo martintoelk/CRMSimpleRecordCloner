@@ -36,11 +36,15 @@
             this.chkIgnoreOwnerAndModifiedBy = new System.Windows.Forms.CheckBox();
             this.chkIgnoreAllLookups = new System.Windows.Forms.CheckBox();
             this.btnCloneRecord = new System.Windows.Forms.Button();
+            this.btnAddToRecordList = new System.Windows.Forms.Button();
+            this.lblRecordsToProcess = new System.Windows.Forms.Label();
+            this.chkVerifyLookups = new System.Windows.Forms.CheckBox();
+            this.lstRecordsToProcess = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // btnChooseTarget
             // 
-            this.btnChooseTarget.Location = new System.Drawing.Point(20, 108);
+            this.btnChooseTarget.Location = new System.Drawing.Point(20, 219);
             this.btnChooseTarget.Name = "btnChooseTarget";
             this.btnChooseTarget.Size = new System.Drawing.Size(89, 23);
             this.btnChooseTarget.TabIndex = 0;
@@ -50,7 +54,7 @@
             // 
             // lstTargetEnvironments
             // 
-            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 109);
+            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 220);
             this.lstTargetEnvironments.Name = "lstTargetEnvironments";
             this.lstTargetEnvironments.Size = new System.Drawing.Size(293, 22);
             this.lstTargetEnvironments.TabIndex = 1;
@@ -69,23 +73,23 @@
             // lblRecordURL
             // 
             this.lblRecordURL.AutoSize = true;
-            this.lblRecordURL.Location = new System.Drawing.Point(17, 44);
+            this.lblRecordURL.Location = new System.Drawing.Point(17, 43);
             this.lblRecordURL.Name = "lblRecordURL";
-            this.lblRecordURL.Size = new System.Drawing.Size(67, 13);
+            this.lblRecordURL.Size = new System.Drawing.Size(70, 13);
             this.lblRecordURL.TabIndex = 3;
-            this.lblRecordURL.Text = "Record URL";
+            this.lblRecordURL.Text = "Record URL:";
             // 
             // txtRecordURL
             // 
-            this.txtRecordURL.Location = new System.Drawing.Point(102, 37);
+            this.txtRecordURL.Location = new System.Drawing.Point(135, 37);
             this.txtRecordURL.Name = "txtRecordURL";
-            this.txtRecordURL.Size = new System.Drawing.Size(298, 20);
+            this.txtRecordURL.Size = new System.Drawing.Size(287, 20);
             this.txtRecordURL.TabIndex = 4;
             // 
             // chkIgnoreOwnerAndModifiedBy
             // 
             this.chkIgnoreOwnerAndModifiedBy.AutoSize = true;
-            this.chkIgnoreOwnerAndModifiedBy.Location = new System.Drawing.Point(20, 63);
+            this.chkIgnoreOwnerAndModifiedBy.Location = new System.Drawing.Point(20, 174);
             this.chkIgnoreOwnerAndModifiedBy.Name = "chkIgnoreOwnerAndModifiedBy";
             this.chkIgnoreOwnerAndModifiedBy.Size = new System.Drawing.Size(169, 17);
             this.chkIgnoreOwnerAndModifiedBy.TabIndex = 5;
@@ -96,7 +100,7 @@
             // chkIgnoreAllLookups
             // 
             this.chkIgnoreAllLookups.AutoSize = true;
-            this.chkIgnoreAllLookups.Location = new System.Drawing.Point(20, 86);
+            this.chkIgnoreAllLookups.Location = new System.Drawing.Point(20, 197);
             this.chkIgnoreAllLookups.Name = "chkIgnoreAllLookups";
             this.chkIgnoreAllLookups.Size = new System.Drawing.Size(113, 17);
             this.chkIgnoreAllLookups.TabIndex = 6;
@@ -106,7 +110,7 @@
             // 
             // btnCloneRecord
             // 
-            this.btnCloneRecord.Location = new System.Drawing.Point(20, 165);
+            this.btnCloneRecord.Location = new System.Drawing.Point(20, 276);
             this.btnCloneRecord.Name = "btnCloneRecord";
             this.btnCloneRecord.Size = new System.Drawing.Size(150, 23);
             this.btnCloneRecord.TabIndex = 7;
@@ -114,10 +118,52 @@
             this.btnCloneRecord.UseVisualStyleBackColor = true;
             this.btnCloneRecord.Click += new System.EventHandler(this.btnCloneRecord_Click);
             // 
+            // btnAddToRecordList
+            // 
+            this.btnAddToRecordList.Location = new System.Drawing.Point(444, 33);
+            this.btnAddToRecordList.Name = "btnAddToRecordList";
+            this.btnAddToRecordList.Size = new System.Drawing.Size(75, 23);
+            this.btnAddToRecordList.TabIndex = 8;
+            this.btnAddToRecordList.Text = "Add To List";
+            this.btnAddToRecordList.UseVisualStyleBackColor = true;
+            this.btnAddToRecordList.Click += new System.EventHandler(this.btnAddToRecordList_Click);
+            // 
+            // lblRecordsToProcess
+            // 
+            this.lblRecordsToProcess.AutoSize = true;
+            this.lblRecordsToProcess.Location = new System.Drawing.Point(17, 81);
+            this.lblRecordsToProcess.Name = "lblRecordsToProcess";
+            this.lblRecordsToProcess.Size = new System.Drawing.Size(103, 13);
+            this.lblRecordsToProcess.TabIndex = 10;
+            this.lblRecordsToProcess.Text = "Records to Process:";
+            // 
+            // chkVerifyLookups
+            // 
+            this.chkVerifyLookups.AutoSize = true;
+            this.chkVerifyLookups.Location = new System.Drawing.Point(233, 174);
+            this.chkVerifyLookups.Name = "chkVerifyLookups";
+            this.chkVerifyLookups.Size = new System.Drawing.Size(203, 17);
+            this.chkVerifyLookups.TabIndex = 11;
+            this.chkVerifyLookups.Text = "Verify Lookups in Target Environment";
+            this.chkVerifyLookups.UseVisualStyleBackColor = true;
+            this.chkVerifyLookups.CheckedChanged += new System.EventHandler(this.chkVerifyLookups_CheckedChanged);
+            // 
+            // lstRecordsToProcess
+            // 
+            this.lstRecordsToProcess.FormattingEnabled = true;
+            this.lstRecordsToProcess.Location = new System.Drawing.Point(135, 73);
+            this.lstRecordsToProcess.Name = "lstRecordsToProcess";
+            this.lstRecordsToProcess.Size = new System.Drawing.Size(293, 95);
+            this.lstRecordsToProcess.TabIndex = 13;
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lstRecordsToProcess);
+            this.Controls.Add(this.chkVerifyLookups);
+            this.Controls.Add(this.lblRecordsToProcess);
+            this.Controls.Add(this.btnAddToRecordList);
             this.Controls.Add(this.btnCloneRecord);
             this.Controls.Add(this.chkIgnoreAllLookups);
             this.Controls.Add(this.chkIgnoreOwnerAndModifiedBy);
@@ -143,5 +189,9 @@
         private System.Windows.Forms.CheckBox chkIgnoreOwnerAndModifiedBy;
         private System.Windows.Forms.CheckBox chkIgnoreAllLookups;
         private System.Windows.Forms.Button btnCloneRecord;
+        private System.Windows.Forms.Button btnAddToRecordList;
+        private System.Windows.Forms.Label lblRecordsToProcess;
+        private System.Windows.Forms.CheckBox chkVerifyLookups;
+        private System.Windows.Forms.ListBox lstRecordsToProcess;
     }
 }
