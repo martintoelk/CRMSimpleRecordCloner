@@ -14,7 +14,7 @@ using Microsoft.Xrm.Sdk.Messages;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
-    public partial class PluginControl : PluginControlBase, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
+    public partial class PluginControl : UserControl, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
     {
         private ConnectionDetail detail;
 
@@ -45,6 +45,14 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 throw new NotImplementedException();
             }
         }
+
+        public IOrganizationService Service
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
         #region XrmToolbox
         public event EventHandler OnRequestConnection;
         #endregion XrmToolbox
@@ -65,8 +73,8 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     //    break;
             }
         }
-
-        public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
+       
+        public  void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
         {
             this.detail = detail;
             if (actionName == "TargetOrganization")
@@ -92,54 +100,10 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         }
 
         public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
+        public event EventHandler OnCloseTool;
 
-        public void ProcessWhoAmI()
-        {
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Retrieving your user id...",
-                Work = (w, e) =>
-                {
-                    var request = new WhoAmIRequest();
-                    var response = (WhoAmIResponse)Service.Execute(request);
-
-                    e.Result = response.UserId;
-                },
-                ProgressChanged = e =>
-                {
-                    // If progress has to be notified to user, use the following method:
-                    SetWorkingMessage("Message to display");
-                },
-                PostWorkCallBack = e =>
-                {
-                    MessageBox.Show(string.Format("You are {0}", (Guid)e.Result));
-                },
-                AsyncArgument = null,
-                IsCancelable = true,
-                MessageWidth = 340,
-                MessageHeight = 150
-            });
-        }
-
-        private void BtnCloseClick(object sender, EventArgs e)
-        {
-            CloseTool(); // PluginBaseControl method that notifies the XrmToolBox that the user wants to close the plugin
-            // Override the ClosingPlugin method to allow for any plugin specific closing logic to be performed (saving configs, canceling close, etc...)
-        }
-
-        private void BtnWhoAmIClick(object sender, EventArgs e)
-        {
-            ExecuteMethod(ProcessWhoAmI); // ExecuteMethod ensures that the user has connected to CRM, before calling the call back method
-        }
-
+       
         #endregion Base tool implementation
-
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            CancelWorker(); // PluginBaseControl method that calls the Background Workers CancelAsync method.
-
-            MessageBox.Show("Cancelled");
-        }
 
         private void btnChooseTarget_Click(object sender, EventArgs e)
         {
@@ -149,7 +113,6 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 OnRequestConnection(this, args);
             }
         }
-
         private void chkIgnoreAllLookups_CheckedChanged(object sender, EventArgs e)
         {
             if (((CheckBox)sender).Checked == true)
@@ -272,7 +235,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             var metaDataRequest = new RetrieveAllEntitiesRequest();
             metaDataRequest.RetrieveAsIfPublished = true;
 
-            var metadata = (RetrieveMetadataChangesResponse)service.Execute(metaDataRequest);
+            var metadata = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
 
             var targetEntity = metadata.EntityMetadata.FirstOrDefault(entity => entity.ObjectTypeCode == typeCode);
 
@@ -281,7 +244,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private void CheckLookups(Entity Entity)
         {
-            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.GetType().Name == "EntityReference").ToList();
+            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
 
             var errorLookups = new List<EntityReference>();
 
@@ -326,7 +289,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private static void RemoveERefs(Entity entity)
         {
-            var allAttributesWithOutERefs = entity.Attributes.Where(attribute => attribute.GetType().Name != "EntityReference").ToList();
+            var allAttributesWithOutERefs = entity.Attributes.Where(attribute => attribute.Value.GetType().Name != "EntityReference").ToList();
 
             entity.Attributes = new AttributeCollection();
             entity.Attributes.AddRange(allAttributesWithOutERefs);
@@ -346,6 +309,16 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             {
                 lstRecordsToProcess.Items.Add(txtRecordURL.Text);
             }
+        }
+
+        private void lstTargetEnvironments_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        public void ClosingPlugin(PluginCloseInfo info)
+        {
+            info.Cancel = MessageBox.Show(@"Are you sure you want to close this tab?", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes;
         }
     }
 }

@@ -59,6 +59,7 @@
             this.lstTargetEnvironments.Size = new System.Drawing.Size(293, 22);
             this.lstTargetEnvironments.TabIndex = 1;
             this.lstTargetEnvironments.UseCompatibleStateImageBehavior = false;
+            this.lstTargetEnvironments.SelectedIndexChanged += new System.EventHandler(this.lstTargetEnvironments_SelectedIndexChanged);
             this.lstTargetEnvironments.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstTargetEnvironments_KeyDown);
             // 
             // lblSource
