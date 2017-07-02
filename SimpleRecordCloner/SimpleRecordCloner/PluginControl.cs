@@ -11,13 +11,14 @@ using System.Drawing;
 using System.Linq;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk.Messages;
+using System.ComponentModel;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
     public partial class PluginControl : UserControl, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
     {
         private ConnectionDetail detail;
-
+        private Panel infoPanel;
         private IOrganizationService service;
         private Dictionary<string, IOrganizationService> targetServices = new Dictionary<string, IOrganizationService>();
         private KeyValuePair<string, IOrganizationService> lastTargetService;
@@ -42,7 +43,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             get
             {
-                throw new NotImplementedException();
+                return "https://github.com/martintmg/CRMSimpleRecordCloner";
             }
         }
 
@@ -73,8 +74,8 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     //    break;
             }
         }
-       
-        public  void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
+
+        public void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
         {
             this.detail = detail;
             if (actionName == "TargetOrganization")
@@ -102,7 +103,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
         public event EventHandler OnCloseTool;
 
-       
+
         #endregion Base tool implementation
 
         private void btnChooseTarget_Click(object sender, EventArgs e)
@@ -154,48 +155,140 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        private void btnCloneRecord_Click(object sender, EventArgs e)
+        private void ToggleWaitMode(bool on)
         {
-            txtRecordURL.Enabled = false;
-            btnAddToRecordList.Enabled = false;
-            btnChooseTarget.Enabled = false;
-
-            var recordToProcess = lstRecordsToProcess.Items;
-
-            foreach (var targetService in targetServices)
+            if (on)
             {
-                lastTargetService = targetService;
+                Cursor = Cursors.WaitCursor;
+                btnAddToRecordList.Enabled = false;
+                btnChooseTarget.Enabled = false;
+                btnCloneRecord.Enabled = false;
+                txtRecordURL.Enabled = false;
+                chkIgnoreAllLookups.Enabled = false;
+                chkIgnoreOwnerAndModifiedBy.Enabled = false;
+                chkVerifyLookups.Enabled = false;
             }
-
-            foreach (var record in recordToProcess)
+            else
             {
-                string logicalName;
-                Guid id;
-                GetParameterFromURL(record.ToString(), out logicalName, out id);
 
-                var entity = service.Retrieve(logicalName, id, new ColumnSet(true));
-
-                if (chkIgnoreAllLookups.Checked)
-                {
-                    RemoveERefs(entity);
-                }
-
-                if (chkIgnoreOwnerAndModifiedBy.Checked)
-                {
-                    RemoveOwnerAndLastmodifed(entity);
-                }
-
-                if (chkVerifyLookups.Checked)
-                {
-                    CheckLookups(entity);
-                }
-
-                lastTargetService.Value.Create(entity);
             }
+        }
 
-            txtRecordURL.Enabled = true;
+        private void WorkerProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            InformationPanel.ChangeInformationPanelMessage(infoPanel, e.UserState.ToString());
+        }
+
+        private void WorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            infoPanel.Dispose();
+            Controls.Remove(infoPanel);
+
             btnAddToRecordList.Enabled = true;
             btnChooseTarget.Enabled = true;
+            btnCloneRecord.Enabled = true;
+            txtRecordURL.Enabled = true;
+            chkIgnoreAllLookups.Enabled = true;
+            chkIgnoreOwnerAndModifiedBy.Enabled = true;
+            chkVerifyLookups.Enabled = true;
+
+            Cursor = Cursors.Default;
+
+            string message;
+
+            if (e.Error != null)
+            {
+                message = string.Format("An error occured: {0}", e.Error.Message);
+                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                message = "Records where cloned successfully!";
+                MessageBox.Show(message, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void WorkerDoWorkCloneRecords(object sender, DoWorkEventArgs e)
+        {
+            var bw = (BackgroundWorker)sender;
+            var current = 0;
+            foreach (var targetService in targetServices)
+            {
+                
+
+                var metaDataRequest = new RetrieveAllEntitiesRequest();
+                metaDataRequest.RetrieveAsIfPublished = true;
+
+                var metadata = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+
+                lastTargetService = targetService;
+
+                var recordToProcess = (ListBox.ObjectCollection)e.Argument;
+
+                foreach (var record in recordToProcess)
+                {
+                    current++;
+                    string logicalName;
+                    Guid id;
+                    GetParameterFromURL(record.ToString(), out logicalName, out id);
+
+                    var entity = service.Retrieve(logicalName, id, new ColumnSet(true));
+
+                    var displayName = entity.GetAttributeValue<string>(metadata.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
+
+                    bw.ReportProgress(0, string.Format("Cloning Record {4} of {5}: Displayname \"{0}\" LogicalName \"{1}\" Id \"{2}\" to Environemt \"{3}\"",
+                        displayName, entity.LogicalName, entity.Id, targetService.Key,
+                        current,
+                        recordToProcess.Count * targetServices.Count()));
+
+                    if (chkIgnoreAllLookups.Checked)
+                    {
+                        RemoveERefs(entity);
+                    }
+
+                    if (chkIgnoreOwnerAndModifiedBy.Checked)
+                    {
+                        RemoveOwnerAndLastmodifed(entity);
+                    }
+                    if (chkIgnoreStateCode.Checked)
+                    {
+                        RemoveStateStausCode(entity);
+                    }
+                    if (chkVerifyLookups.Checked)
+                    {
+                        if (!AreAllLookUpsPresent(entity))
+                        {
+                            return;
+                        }
+                    }
+                    
+                    lastTargetService.Value.Create(entity);
+                }
+            }
+        }
+
+        private void RemoveStateStausCode(Entity entity)
+        {
+            if (entity.Contains("statecode"))
+                entity.Attributes.Remove("statecode");
+
+            if (entity.Contains("statuscode"))
+                entity.Attributes.Remove("statuscode");
+        }
+
+        private void btnCloneRecord_Click(object sender, EventArgs e)
+        {
+            var recordToProcess = lstRecordsToProcess.Items;
+            infoPanel = InformationPanel.GetInformationPanel(this, "Initializing...", 540, 220);
+            ToggleWaitMode(true);
+            using (var worker = new BackgroundWorker())
+            {
+                worker.DoWork += WorkerDoWorkCloneRecords;
+                worker.ProgressChanged += WorkerProgressChanged;
+                worker.RunWorkerCompleted += WorkerRunWorkerCompleted;
+                worker.WorkerReportsProgress = true;
+                worker.RunWorkerAsync(recordToProcess);
+            }
         }
 
         private void GetParameterFromURL(string RecordUrl, out string LogicalName, out Guid RecordId)
@@ -208,7 +301,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
             var parameters = query.Split('&').ToList();
 
-            foreach(var parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 var nameAndValue = parameter.Split('=');
 
@@ -242,7 +335,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             LogicalName = targetEntity.LogicalName;
         }
 
-        private void CheckLookups(Entity Entity)
+        private bool AreAllLookUpsPresent(Entity Entity)
         {
             var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
 
@@ -262,17 +355,17 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
             if (errorLookups.Any())
             {
-                var message = "The following Lookups are not present in the Target Enviornment" + Environment.NewLine;
+                var message = "The following Lookups are not present in the Target Enviornment. Do you want to proceed?" + Environment.NewLine;
 
                 foreach (var error in errorLookups)
                 {
                     message += string.Format("LogicalName {0} Id {1} does not exist {2}", error.LogicalName, error.Id, Environment.NewLine);
                 }
 
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
+                return MessageBox.Show(message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
             }
+
+            return true;
         }
 
         private static void RemoveOwnerAndLastmodifed(Entity entity)
@@ -291,7 +384,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             var allAttributesWithOutERefs = entity.Attributes.Where(attribute => attribute.Value.GetType().Name != "EntityReference").ToList();
 
-            entity.Attributes = new AttributeCollection();
+            entity.Attributes = new Microsoft.Xrm.Sdk.AttributeCollection();
             entity.Attributes.AddRange(allAttributesWithOutERefs);
         }
 
@@ -305,9 +398,16 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private void btnAddToRecordList_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(txtRecordURL.Text))
+            var fileToAdd = txtRecordURL.Text.Replace("<", "").Replace(">", "");
+
+            if (!string.IsNullOrWhiteSpace(fileToAdd))
             {
-                lstRecordsToProcess.Items.Add(txtRecordURL.Text);
+                lstRecordsToProcess.Items.Add(fileToAdd);
+                txtRecordURL.Text = string.Empty;
+            }
+            else
+            {
+                MessageBox.Show("Url is not Valid!");
             }
         }
 
@@ -318,7 +418,26 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         public void ClosingPlugin(PluginCloseInfo info)
         {
-            info.Cancel = MessageBox.Show(@"Are you sure you want to close this tab?", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes;
+            //info.Cancel = MessageBox.Show(@"Are you sure you want to close this tab?", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes;
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            if (OnCloseTool != null)
+            {
+                const string message = "Are you sure to exit?";
+                if (MessageBox.Show(message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                    DialogResult.Yes)
+                    OnCloseTool(this, null);
+            }
+        }
+
+        private void lstRecordsToProcess_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (lstRecordsToProcess.SelectedItems.Count > 0 && e.KeyCode == Keys.Delete)
+            {
+                lstRecordsToProcess.Items.Remove(lstRecordsToProcess.SelectedItem);
+            }
         }
     }
 }

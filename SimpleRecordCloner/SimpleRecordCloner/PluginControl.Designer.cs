@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginControl));
             this.btnChooseTarget = new System.Windows.Forms.Button();
             this.lstTargetEnvironments = new System.Windows.Forms.ListView();
             this.lblSource = new System.Windows.Forms.Label();
@@ -40,11 +41,15 @@
             this.lblRecordsToProcess = new System.Windows.Forms.Label();
             this.chkVerifyLookups = new System.Windows.Forms.CheckBox();
             this.lstRecordsToProcess = new System.Windows.Forms.ListBox();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.btnClose = new System.Windows.Forms.ToolStripButton();
+            this.chkIgnoreStateCode = new System.Windows.Forms.CheckBox();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnChooseTarget
             // 
-            this.btnChooseTarget.Location = new System.Drawing.Point(20, 219);
+            this.btnChooseTarget.Location = new System.Drawing.Point(20, 221);
             this.btnChooseTarget.Name = "btnChooseTarget";
             this.btnChooseTarget.Size = new System.Drawing.Size(89, 23);
             this.btnChooseTarget.TabIndex = 0;
@@ -54,7 +59,7 @@
             // 
             // lstTargetEnvironments
             // 
-            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 220);
+            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 222);
             this.lstTargetEnvironments.Name = "lstTargetEnvironments";
             this.lstTargetEnvironments.Size = new System.Drawing.Size(293, 22);
             this.lstTargetEnvironments.TabIndex = 1;
@@ -111,7 +116,7 @@
             // 
             // btnCloneRecord
             // 
-            this.btnCloneRecord.Location = new System.Drawing.Point(20, 276);
+            this.btnCloneRecord.Location = new System.Drawing.Point(20, 278);
             this.btnCloneRecord.Name = "btnCloneRecord";
             this.btnCloneRecord.Size = new System.Drawing.Size(150, 23);
             this.btnCloneRecord.TabIndex = 7;
@@ -156,11 +161,44 @@
             this.lstRecordsToProcess.Name = "lstRecordsToProcess";
             this.lstRecordsToProcess.Size = new System.Drawing.Size(293, 95);
             this.lstRecordsToProcess.TabIndex = 13;
+            this.lstRecordsToProcess.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstRecordsToProcess_KeyDown);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnClose});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(543, 25);
+            this.toolStrip1.TabIndex = 14;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // btnClose
+            // 
+            this.btnClose.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnClose.Image = ((System.Drawing.Image)(resources.GetObject("btnClose.Image")));
+            this.btnClose.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(23, 22);
+            this.btnClose.Text = "Close This Tool";
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // chkIgnoreStateCode
+            // 
+            this.chkIgnoreStateCode.AutoSize = true;
+            this.chkIgnoreStateCode.Location = new System.Drawing.Point(233, 197);
+            this.chkIgnoreStateCode.Name = "chkIgnoreStateCode";
+            this.chkIgnoreStateCode.Size = new System.Drawing.Size(141, 17);
+            this.chkIgnoreStateCode.TabIndex = 15;
+            this.chkIgnoreStateCode.Text = "IgnoreStateStatusCodes";
+            this.chkIgnoreStateCode.UseVisualStyleBackColor = true;
             // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkIgnoreStateCode);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.lstRecordsToProcess);
             this.Controls.Add(this.chkVerifyLookups);
             this.Controls.Add(this.lblRecordsToProcess);
@@ -175,6 +213,8 @@
             this.Controls.Add(this.btnChooseTarget);
             this.Name = "PluginControl";
             this.Size = new System.Drawing.Size(543, 412);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,5 +234,8 @@
         private System.Windows.Forms.Label lblRecordsToProcess;
         private System.Windows.Forms.CheckBox chkVerifyLookups;
         private System.Windows.Forms.ListBox lstRecordsToProcess;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton btnClose;
+        private System.Windows.Forms.CheckBox chkIgnoreStateCode;
     }
 }
