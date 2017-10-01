@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk.Messages;
 using System.ComponentModel;
+using martintmg.MSDYN.Tools.SimpleRecordCloner.Helpers;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
@@ -67,11 +68,6 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     lblSource.Text = detail.ConnectionName;
                     lblSource.ForeColor = Color.Green;
                     break;
-
-                    //case "Target":
-                    //    lblTarget.Text = detail.ConnectionName;
-                    //    lblTarget.ForeColor = Color.Green;
-                    //    break;
             }
         }
 
@@ -214,8 +210,6 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             var current = 0;
             foreach (var targetService in targetServices)
             {
-                
-
                 var metaDataRequest = new RetrieveAllEntitiesRequest();
                 metaDataRequest.RetrieveAsIfPublished = true;
 
@@ -233,7 +227,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     GetParameterFromURL(record.ToString(), out logicalName, out id);
 
                     var entity = service.Retrieve(logicalName, id, new ColumnSet(true));
-
+                    
                     var displayName = entity.GetAttributeValue<string>(metadata.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
 
                     bw.ReportProgress(0, string.Format("Cloning Record {4} of {5}: Displayname \"{0}\" LogicalName \"{1}\" Id \"{2}\" to Environemt \"{3}\"",
@@ -250,10 +244,12 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     {
                         RemoveOwnerAndLastmodifed(entity);
                     }
+
                     if (chkIgnoreStateCode.Checked)
                     {
                         RemoveStateStausCode(entity);
                     }
+
                     if (chkVerifyLookups.Checked)
                     {
                         if (!AreAllLookUpsPresent(entity))
@@ -269,11 +265,11 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private void RemoveStateStausCode(Entity entity)
         {
-            if (entity.Contains("statecode"))
-                entity.Attributes.Remove("statecode");
+            if (entity.Contains(EntityNames.StateCode))
+                entity.Attributes.Remove(EntityNames.StateCode);
 
-            if (entity.Contains("statuscode"))
-                entity.Attributes.Remove("statuscode");
+            if (entity.Contains(EntityNames.StatusCode))
+                entity.Attributes.Remove(EntityNames.StatusCode);
         }
 
         private void btnCloneRecord_Click(object sender, EventArgs e)
@@ -370,13 +366,13 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private static void RemoveOwnerAndLastmodifed(Entity entity)
         {
-            if (entity.Contains("ownerid"))
+            if (entity.Contains(EntityNames.Owner))
             {
-                entity.Attributes.Remove("ownerid");
+                entity.Attributes.Remove(EntityNames.Owner);
             }
-            if (entity.Contains("modifiedby"))
+            if (entity.Contains(EntityNames.ModifiedBy))
             {
-                entity.Attributes.Remove("modifiedby");
+                entity.Attributes.Remove(EntityNames.ModifiedBy);
             }
         }
 

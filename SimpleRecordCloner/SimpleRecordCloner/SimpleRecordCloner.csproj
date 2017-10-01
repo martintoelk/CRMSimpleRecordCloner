@@ -129,6 +129,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\EntityNames.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="PluginControl.cs">
       <SubType>UserControl</SubType>
@@ -161,6 +162,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Res\Logo.png" />
     <Content Include="XMLFile1.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
