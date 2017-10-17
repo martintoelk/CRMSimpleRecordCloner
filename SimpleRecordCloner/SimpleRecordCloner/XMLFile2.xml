@@ -1,0 +1,943 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DependentOptionSetConfig entity="new_beratung">
+  <ParentField id="new_beratungsart" label="Art">
+    <DependentField id="new_status" label="Vorgangsstatus" />
+
+    <Option value="308" label="Integrationsprojekte">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="39" label="Erstgespräch stattgefunden" />
+      <ShowOption value="29" label="Beratung Ergebnislos beendet" />
+      <ShowOption value="42" label="Positive Stellungnahme" />
+      <ShowOption value="52" label="Negative Stellungnahme" />
+    </Option>
+
+    <Option value="100000005" label="Business Angel Netzwerk">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000006" label="Gespräch mit Investor/Business Angel">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000007" label="Gespräch mit Netzwerkpartner">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000008" label="LandesBürgschaft NDS">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000009" label="Mikromezzaninfonds">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000010" label="Start-up">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000011" label="Externe Programme – KfW">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000012" label="Externe Programme – BAFA">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000013" label="Externe Programme – Landwirtschaftskammer">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000014" label="Externe Programme – Regionale KMU – Förderung">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000015" label="Förderung unternehmerischen Know-hows (BAFA">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000016" label="Kundenportal">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000017" label="Niedersachsen-Kredit Energieeffizienz Gebäude">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000018" label="Niedersachsen-Kredit Energieeffizienz Produktion">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000019" label="Niedrigschwellige Innovationsförderung">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000020" label="Weiterbildung in Niedersachsen">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000021" label="Allgemeine Innovationsberatung">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000022" label="Bundesprogramme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000023" label="Niedersächsisches Innovationsförderprogramme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000024" label="Klimaschutzberatung für Unternehmen/Bundesprogramme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000025" label="Klimaschutzberatung für Unternehmen/eigene Programme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000026" label="Klimaschutzberatung für Kommunen/Bundesprogramme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000027" label="Klimaschutzberatung für Kommunen/eigene Programme">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000028" label="Sonstige">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000029" label="KIN">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000030" label="Kommunalaudit">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000031" label="Vorträge">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000032" label="Wohnraumversorgungskonzept">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000033" label="WOM-allgemein">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000034" label="Intensivberatung (Krise)">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000035" label="Intensivberatung (Normal)">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000036" label="Innovationsförderprogramm">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000037" label="MikroSTARTer – Kunden">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000038" label="MikroSTARTer – fachkundige Stellen">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+    <Option value="100000039" label="Netzwerk">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000001" label="In Bearbeitung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+
+
+
+
+    <!--Option value="308" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="99" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="100" label="" />
+      <ShowOption value="101" label="" />
+      <ShowOption value="29" label="" />
+    </Option>-->
+    <Option value="215" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="60" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="212" label="">
+      <ShowOption value="56" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="80" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="213" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="56" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="59" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="210" label="">
+      <ShowOption value="56" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="80" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="313" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="312" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="311" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="100" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="310" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="701" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="702" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="703" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="404" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="5" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="111" label="">
+      <ShowOption value="8" label="" />
+      <ShowOption value="69" label="" />
+      <ShowOption value="10" label="" />
+      <ShowOption value="25" label="" />
+      <ShowOption value="28" label="" />
+    </Option>
+    <Option value="110" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="63" label="" />
+      <ShowOption value="57" label="" />
+      <ShowOption value="64" label="" />
+      <ShowOption value="65" label="" />
+      <ShowOption value="66" label="" />
+      <ShowOption value="69" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="405" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="76" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="429" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="704" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="320" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="321" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="402" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="75" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="401" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="70" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="509" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="20" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="421" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="420" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="24" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="504" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="422" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="502" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="706" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="409" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="26" label="" />
+      <ShowOption value="27" label="" />
+      <ShowOption value="47" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="85" label="" />
+      <ShowOption value="89" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="408" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="201" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="58" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="309" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="100" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="203" label="">
+      <ShowOption value="56" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="80" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="508" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="205" label="">
+      <ShowOption value="56" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="80" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="83" label="" />
+      <ShowOption value="33" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+
+    <Option value="100000041" label="Teilnahme an Bankenworkshop">
+      <ShowOption value="50" label="Interessent" />
+      <ShowOption value="100000002" label="Teilnahme erfolgt" />
+      <ShowOption value="100000003" label="In Nachbetreuung" />
+      <ShowOption value="100000000" label="Abgeschlossen" />
+    </Option>
+
+    <Option value="100000040" label="">
+      <ShowOption value="56" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="80" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="83" label="" />
+      <ShowOption value="33" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+
+    <Option value="204" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="36" label="" />
+      <ShowOption value="68" label="" />
+      <ShowOption value="46" label="" />
+      <ShowOption value="45" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="207" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="206" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="62" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="300" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="301" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="302" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="303" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="304" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="305" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="306" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="307" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="96" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="81" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="98" label="" />
+      <ShowOption value="97" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="506" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="108" label="">
+      <ShowOption value="40" label="" />
+      <ShowOption value="51" label="" />
+      <ShowOption value="7" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="109" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="63" label="" />
+      <ShowOption value="57" label="" />
+      <ShowOption value="64" label="" />
+      <ShowOption value="65" label="" />
+      <ShowOption value="66" label="" />
+      <ShowOption value="69" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="588" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="39" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="42" label="" />
+      <ShowOption value="52" label="" />
+    </Option>
+    <Option value="507" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="102" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="39" label="" />
+      <ShowOption value="31" label="" />
+      <ShowOption value="43" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="103" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="30" label="" />
+      <ShowOption value="3" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="100" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="101" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="39" label="" />
+      <ShowOption value="31" label="" />
+      <ShowOption value="43" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="107" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="63" label="" />
+      <ShowOption value="57" label="" />
+      <ShowOption value="64" label="" />
+      <ShowOption value="65" label="" />
+      <ShowOption value="66" label="" />
+      <ShowOption value="69" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="104" label="">
+      <ShowOption value="12" label="" />
+      <ShowOption value="41" label="" />
+      <ShowOption value="11" label="" />
+    </Option>
+    <Option value="512" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="54" label="" />
+      <ShowOption value="49" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="705" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+      <ShowOption value="100000102" label="" />
+    </Option>
+    <Option value="514" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="414" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="9" label="" />
+      <ShowOption value="78" label="" />
+      <ShowOption value="92" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="24" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="415" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="18" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="24" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="416" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="72" label="" />
+      <ShowOption value="17" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="417" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="410" label="">
+      <ShowOption value="19" label="" />
+      <ShowOption value="37" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="92" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="24" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="411" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="1" label="" />
+      <ShowOption value="2" label="" />
+      <ShowOption value="22" label="" />
+      <ShowOption value="48" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="86" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="412" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="6" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="413" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="93" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="511" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="510" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="14" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="513" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="20" label="" />
+      <ShowOption value="16" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="501" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="15" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="418" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="13" label="" />
+      <ShowOption value="34" label="" />
+      <ShowOption value="24" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+    <Option value="419" label="">
+      <ShowOption value="50" label="" />
+      <ShowOption value="73" label="" />
+      <ShowOption value="19" label="" />
+      <ShowOption value="23" label="" />
+      <ShowOption value="29" label="" />
+    </Option>
+  </ParentField>
+  <ParentField id="new_beratungsbereich" label="Bereich">
+    <DependentField id="new_beratungsart" label="Art" />
+    <Option value="1" label="Enterprise Europe Network">
+      <ShowOption value="100" label="Beratung EU-Förderung" />
+      <ShowOption value="101" label="Innovationsaudit" />
+      <ShowOption value="102" label="Internationalisierungsaudit" />
+      <ShowOption value="103" label="ÖAW" />
+      <ShowOption value="104" label="Allgemeine Anfrage" />
+      <ShowOption value="107" label="EOI für Profil aus dem EEN-Netzwerk" />
+      <ShowOption value="108" label="Aktivität mit Multiplikator" />
+      <ShowOption value="109" label="Gespräch auf BE oder CM" />
+      <ShowOption value="110" label="EOI für eigenes Profil" />
+      <ShowOption value="111" label="Profil erstellen" />
+    </Option>
+    <Option value="2" label="Finanzierungsberatung">
+      <ShowOption value="100000005" label="Business Angel Netzwerk" />
+      <ShowOption value="100000008" label="Gespräch mit Investor/Business Angel" />
+      <ShowOption value="100000000" label="Gespräch mit KI" />
+      <ShowOption value="100000007" label="Gespräch mit Netzwerkpartner" />
+      <ShowOption value="100000034" label="Intensivberatung (Krise)" />
+      <ShowOption value="100000035" label="Intensivberatung (Normal)" />
+      <ShowOption value="100000108" label="Landesbürgschaften NDS" />
+      <ShowOption value="100000009" label="Mikromezzaninfonds" />
+      <ShowOption value="100000040" label="NSeed" />
+      <ShowOption value="100000041" label="Teilnahme an Bankenworkshop" />
+      <ShowOption value="213" label="MBG" />
+      <ShowOption value="215" label="NBB" />
+      <ShowOption value="204" label="NCapital" />
+      <ShowOption value="205" label="NBeteiligung" />
+      <ShowOption value="100000010" label="Start-up" />
+    </Option>
+    <Option value="3" label="B3">
+      <ShowOption value="300" label="Arbeit durch Qualifizierung (AdQ)" />
+      <ShowOption value="301" label="Ausbildungsverbünde" />
+      <ShowOption value="302" label="Berufliche Qualifizierung und Integration von arbeitslosen Straffälligen" />
+      <ShowOption value="303" label="Dynamische Integration in den Arbeitsmarkt (DIA)" />
+      <ShowOption value="304" label="Förderung der Integration von Frauen in den Arbeitsmarkt (FIFA)" />
+      <ShowOption value="305" label="Individuelle Weiterbildung in Niedersachsen (IWiN)" />
+      <ShowOption value="306" label="Inklusion durch Enkulturation" />
+      <ShowOption value="307" label="Innovative Projekte der berufliche Aus-, Fort- und Weiterbildung" />
+      <ShowOption value="308" label="Integrationsprojekte" />
+      <ShowOption value="309" label="Jugendwerkstätten" />
+      <ShowOption value="310" label="Koordinierungsstellen Frauen und Beruf" />
+      <ShowOption value="311" label="Pro-Aktiv-Centren (PACE)" />
+      <ShowOption value="312" label="Transnationale Projekte" />
+      <ShowOption value="313" label="Weiterbildungsoffensive für den Mittelstand (WOM)" />
+      <ShowOption value="320" label="Modellprojekt betriebliche Ausbildung" />
+      <ShowOption value="321" label="Außerhalb von Richtlinien - Bereich Arbeitsmarktförderung" />
+    </Option>
+    <Option value="4" label="B4">
+      <ShowOption value="401" label="Technologietransfer in regionale Gebietskörperschaften" />
+      <ShowOption value="402" label="Regionale Wachstumsprojekte" />
+      <ShowOption value="404" label="Wiedernutzung brachliegender Flächen" />
+      <ShowOption value="405" label="ZIM" />
+      <ShowOption value="408" label="Energieeffizienz" />
+      <ShowOption value="409" label="PPP" />
+      <ShowOption value="410" label="außerhalb der Richtlinien" />
+      <ShowOption value="411" label="Breitbandförderung" />
+      <ShowOption value="412" label="Güterverkehrszentren" />
+      <ShowOption value="413" label="Hafeninfrastruktur" />
+      <ShowOption value="414" label="Innovationsförderprogramm Forschung und Entwicklung" />
+      <ShowOption value="415" label="Management von Innovationsnetzwerken" />
+      <ShowOption value="416" label="Klima- / Umweltschutz" />
+      <ShowOption value="417" label="Komunale Abwasserbeseitigung" />
+      <ShowOption value="418" label="Luftfahrtforschung" />
+      <ShowOption value="419" label="Natur erleben und nachhaltige Entwicklung" />
+      <ShowOption value="420" label="Innovationspakt" />
+      <ShowOption value="421" label="Tourismus" />
+      <ShowOption value="422" label="Wirtschaftsnahe Infrastruktur" />
+      <ShowOption value="429" label="Zukunft und Innovation" />
+    </Option>
+    <Option value="5" label="Förderberatung">
+      <ShowOption value="501" label="Einzelbetriebliche Investitionsförderung (GRW)" />
+      <ShowOption value="100000011" label="Externe Programme – KfW" />
+      <ShowOption value="100000012" label="Externe Programme – BAFA" />
+      <ShowOption value="100000013" label="Externe Programme – Landwirtschaftskammer" />
+      <ShowOption value="100000014" label="Externe Programme – Regionale KMU – Förderung" />
+      <ShowOption value="100000015" label="Förderung unternehmerischen Know-hows (BAFA)" />
+      <ShowOption value="100000007" label="Gespräch mit Netzwerkpartner" />
+      <ShowOption value="100000036" label="Innovationsförderprogramm" />
+      <ShowOption value="100000016" label="Kundenportal" />
+      <ShowOption value="510" label="Messeförderung" />
+      <ShowOption value="100000037" label="MikroSTARTer – Kunden" />
+      <ShowOption value="100000038" label="MikroSTARTer – fachkundige Stellen" />
+      <ShowOption value="516" label="Niedersachsen-Gründerkredit" />
+      <ShowOption value="100000017" label="Niedersachsen-Kredit Energieeffizienz Gebäude" />
+      <ShowOption value="100000018" label="Niedersachsen-Kredit Energieeffizienz Produktion" />
+      <ShowOption value="100000019" label="Niedrigschwellige Innovationsförderung" />
+      <ShowOption value="100000020" label="Weiterbildung in Niedersachsen" />
+      <ShowOption value="506" label="Wohnraumförderung" />
+    </Option>
+    <Option value="6" label="B6">
+      <ShowOption value="600" label="Antrag" />
+    </Option>
+    <Option value="7" label="B7">
+      <ShowOption value="701" label="Arbeitsmarkt" />
+      <ShowOption value="702" label="Arbeitsmarkt (Konversion)" />
+      <ShowOption value="706" label="Netzwerke" />
+    </Option>
+    <Option value="100000000" label="Kommunalberatung">
+      <ShowOption value="100000003" label="Breitband" />
+      <ShowOption value="100000000" label="Gespräch mit KI" />
+      <ShowOption value="100000007" label="Gespräch mit Netzwerkpartner" />
+      <ShowOption value="703" label="Infrastruktur" />
+      <ShowOption value="100000029" label="KIN" />
+      <ShowOption value="100000030" label="Kommunalaudit" />
+      <ShowOption value="100000001" label="Konversion" />
+      <ShowOption value="100000002" label="ÖPP" />
+    </Option>
+
+    <Option value="100000001" label="Innovationsberatung">
+      <ShowOption value="100000021" label="Allgemeine Innovationsberatung" />
+      <ShowOption value="100000022" label="Bundesprogramme" />
+      <ShowOption value="100000007" label="Gespräch mit Netzwerkpartner" />
+      <ShowOption value="100000023" label="Niedersächsisches Innovationsförderprogramme" />
+    </Option>
+
+    <Option value="100000002" label="IP-Beratung">
+      <ShowOption value="308" label="Integrationsprojekte" />
+    </Option>
+
+    <Option value="100000003" label="Klimaschutzberatung">
+      <ShowOption value="100000007" label="Gespräch mit Netzwerkpartner  " />
+      <ShowOption value="100000024" label="Klimaschutzberatung für Unternehmen/Bundesprogramme  " />
+      <ShowOption value="100000025" label="Klimaschutzberatung für Unternehmen/eigene Programme  " />
+      <ShowOption value="100000026" label="Klimaschutzberatung für Kommunen/Bundesprogramme  " />
+      <ShowOption value="100000027" label="Klimaschutzberatung für Kommunen/eigene Programme " />
+      <ShowOption value="100000028" label="sonstige  " />
+    </Option>
+
+    <Option value="100000004" label="Wohnungsmarktbeobachtung ">
+      <ShowOption value="100000039" label="Netzwerk " />
+      <ShowOption value="100000031" label="Vorträge" />
+      <ShowOption value="100000032" label="Wohnraumversorgungskonzept " />
+      <ShowOption value="100000033" label="WOM-allgemein " />
+    </Option>
+
+  </ParentField>
+</DependentOptionSetConfig>

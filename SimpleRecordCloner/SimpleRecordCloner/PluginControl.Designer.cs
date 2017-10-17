@@ -44,12 +44,15 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnClose = new System.Windows.Forms.ToolStripButton();
             this.chkIgnoreStateCode = new System.Windows.Forms.CheckBox();
+            this.chkRemoveNonExistingAttributes = new System.Windows.Forms.CheckBox();
+            this.chkUpsertRecords = new System.Windows.Forms.CheckBox();
+            this.chkRemoveNotFoundLookups = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnChooseTarget
             // 
-            this.btnChooseTarget.Location = new System.Drawing.Point(20, 221);
+            this.btnChooseTarget.Location = new System.Drawing.Point(20, 286);
             this.btnChooseTarget.Name = "btnChooseTarget";
             this.btnChooseTarget.Size = new System.Drawing.Size(89, 23);
             this.btnChooseTarget.TabIndex = 0;
@@ -59,7 +62,7 @@
             // 
             // lstTargetEnvironments
             // 
-            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 222);
+            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 287);
             this.lstTargetEnvironments.Name = "lstTargetEnvironments";
             this.lstTargetEnvironments.Size = new System.Drawing.Size(293, 22);
             this.lstTargetEnvironments.TabIndex = 1;
@@ -116,7 +119,7 @@
             // 
             // btnCloneRecord
             // 
-            this.btnCloneRecord.Location = new System.Drawing.Point(20, 278);
+            this.btnCloneRecord.Location = new System.Drawing.Point(20, 336);
             this.btnCloneRecord.Name = "btnCloneRecord";
             this.btnCloneRecord.Size = new System.Drawing.Size(150, 23);
             this.btnCloneRecord.TabIndex = 7;
@@ -146,7 +149,7 @@
             // chkVerifyLookups
             // 
             this.chkVerifyLookups.AutoSize = true;
-            this.chkVerifyLookups.Location = new System.Drawing.Point(233, 174);
+            this.chkVerifyLookups.Location = new System.Drawing.Point(300, 174);
             this.chkVerifyLookups.Name = "chkVerifyLookups";
             this.chkVerifyLookups.Size = new System.Drawing.Size(203, 17);
             this.chkVerifyLookups.TabIndex = 11;
@@ -186,17 +189,50 @@
             // chkIgnoreStateCode
             // 
             this.chkIgnoreStateCode.AutoSize = true;
-            this.chkIgnoreStateCode.Location = new System.Drawing.Point(233, 197);
+            this.chkIgnoreStateCode.Location = new System.Drawing.Point(300, 197);
             this.chkIgnoreStateCode.Name = "chkIgnoreStateCode";
             this.chkIgnoreStateCode.Size = new System.Drawing.Size(141, 17);
             this.chkIgnoreStateCode.TabIndex = 15;
             this.chkIgnoreStateCode.Text = "IgnoreStateStatusCodes";
             this.chkIgnoreStateCode.UseVisualStyleBackColor = true;
             // 
+            // chkRemoveNonExistingAttributes
+            // 
+            this.chkRemoveNonExistingAttributes.AutoSize = true;
+            this.chkRemoveNonExistingAttributes.Location = new System.Drawing.Point(20, 220);
+            this.chkRemoveNonExistingAttributes.Name = "chkRemoveNonExistingAttributes";
+            this.chkRemoveNonExistingAttributes.Size = new System.Drawing.Size(257, 17);
+            this.chkRemoveNonExistingAttributes.TabIndex = 16;
+            this.chkRemoveNonExistingAttributes.Text = "Remove missing Attributes in Traget Environment";
+            this.chkRemoveNonExistingAttributes.UseVisualStyleBackColor = true;
+            // 
+            // chkUpsertRecords
+            // 
+            this.chkUpsertRecords.AutoSize = true;
+            this.chkUpsertRecords.Location = new System.Drawing.Point(300, 220);
+            this.chkUpsertRecords.Name = "chkUpsertRecords";
+            this.chkUpsertRecords.Size = new System.Drawing.Size(97, 17);
+            this.chkUpsertRecords.TabIndex = 17;
+            this.chkUpsertRecords.Text = "Upser Records";
+            this.chkUpsertRecords.UseVisualStyleBackColor = true;
+            // 
+            // chkRemoveNotFoundLookups
+            // 
+            this.chkRemoveNotFoundLookups.AutoSize = true;
+            this.chkRemoveNotFoundLookups.Location = new System.Drawing.Point(20, 244);
+            this.chkRemoveNotFoundLookups.Name = "chkRemoveNotFoundLookups";
+            this.chkRemoveNotFoundLookups.Size = new System.Drawing.Size(315, 17);
+            this.chkRemoveNotFoundLookups.TabIndex = 18;
+            this.chkRemoveNotFoundLookups.Text = "Remove Lookups which are not present in the Target System";
+            this.chkRemoveNotFoundLookups.UseVisualStyleBackColor = true;
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkRemoveNotFoundLookups);
+            this.Controls.Add(this.chkUpsertRecords);
+            this.Controls.Add(this.chkRemoveNonExistingAttributes);
             this.Controls.Add(this.chkIgnoreStateCode);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.lstRecordsToProcess);
@@ -237,5 +273,8 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnClose;
         private System.Windows.Forms.CheckBox chkIgnoreStateCode;
+        private System.Windows.Forms.CheckBox chkRemoveNonExistingAttributes;
+        private System.Windows.Forms.CheckBox chkUpsertRecords;
+        private System.Windows.Forms.CheckBox chkRemoveNotFoundLookups;
     }
 }

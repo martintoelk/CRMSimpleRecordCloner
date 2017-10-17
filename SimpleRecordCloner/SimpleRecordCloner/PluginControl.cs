@@ -12,11 +12,11 @@ using System.Linq;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk.Messages;
 using System.ComponentModel;
-using martintmg.MSDYN.Tools.SimpleRecordCloner.Helpers;
+using System.Text;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
-    public partial class PluginControl : UserControl, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
+    public partial class PluginControl : PluginControlBase, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
     {
         private ConnectionDetail detail;
         private Panel infoPanel;
@@ -213,7 +213,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 var metaDataRequest = new RetrieveAllEntitiesRequest();
                 metaDataRequest.RetrieveAsIfPublished = true;
 
-                var metadata = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+                var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
 
                 lastTargetService = targetService;
 
@@ -227,13 +227,15 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     GetParameterFromURL(record.ToString(), out logicalName, out id);
 
                     var entity = service.Retrieve(logicalName, id, new ColumnSet(true));
-                    
-                    var displayName = entity.GetAttributeValue<string>(metadata.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
+
+                    var displayName = entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
 
                     bw.ReportProgress(0, string.Format("Cloning Record {4} of {5}: Displayname \"{0}\" LogicalName \"{1}\" Id \"{2}\" to Environemt \"{3}\"",
                         displayName, entity.LogicalName, entity.Id, targetService.Key,
                         current,
                         recordToProcess.Count * targetServices.Count()));
+                    
+                    entity.Attributes.Remove("traversedpath");
 
                     if (chkIgnoreAllLookups.Checked)
                     {
@@ -257,19 +259,100 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                             return;
                         }
                     }
-                    
-                    lastTargetService.Value.Create(entity);
+
+                    if (chkRemoveNotFoundLookups.Checked)
+                    {
+                        RemoveNotFoundLookups(entity,targetService.Value);
+                    }
+
+                    if (chkRemoveNonExistingAttributes.Checked)
+                    {
+                        RemoveMissingAttributeInTargetEnvironment(entity, lastTargetService.Value);
+                    }
+
+                    if (chkUpsertRecords.Checked)
+                    {
+                        var primaryIdAttribute = SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryIdAttribute;
+
+                        entity.KeyAttributes.Add(primaryIdAttribute, entity.Id);
+
+                        var upsertReq = new UpsertRequest()
+                        {
+                            Target = entity
+                        };
+
+                        var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
+                        var created = resp.RecordCreated;
+                    }
+                    else
+                    {
+                        lastTargetService.Value.Create(entity);
+                    }
                 }
             }
         }
 
+        private void RemoveNotFoundLookups(Entity Entity, IOrganizationService TargetOrgSvc)
+        {
+            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
+
+            allERefsAttributes.ForEach(eRefAttribute =>
+            {
+                try
+                {
+                    var eRef = (EntityReference)eRefAttribute.Value;
+                    var entity = TargetOrgSvc.Retrieve(eRef.LogicalName, eRef.Id, new ColumnSet(false));
+                }
+                catch
+                {
+                    Entity.Attributes.Remove(eRefAttribute.Key);
+                }
+            });
+        }
+
+        private void RemoveMissingAttributeInTargetEnvironment(Entity Entity, IOrganizationService TragetOrgService)
+        {
+            var entityMetaData = new RetrieveEntityRequest();
+            entityMetaData.RetrieveAsIfPublished = true;
+            entityMetaData.EntityFilters = Microsoft.Xrm.Sdk.Metadata.EntityFilters.Attributes;
+            entityMetaData.LogicalName = Entity.LogicalName;
+
+            var SourceMetaData = (RetrieveEntityResponse)TragetOrgService.Execute(entityMetaData);
+
+            var sourceAttributes = Entity.Attributes;
+
+            var tempEntity = new Entity();
+
+            SourceMetaData.EntityMetadata.Attributes.ToList().ForEach(attributeMetadata =>
+            {
+                var attributeLogicalName = attributeMetadata.LogicalName;
+
+                if (!attributeMetadata.IsValidForCreate.Value)
+                {
+                    sourceAttributes.Remove(attributeLogicalName);
+                }
+                if (!attributeMetadata.IsValidForUpdate.Value)
+                {
+                    sourceAttributes.Remove(attributeLogicalName);
+                }
+
+                if (sourceAttributes.Contains(attributeLogicalName))
+                {
+                    tempEntity.Attributes.Add(attributeLogicalName, sourceAttributes[attributeLogicalName]);
+                }
+            });
+
+            Entity.Attributes.Clear();
+            Entity.Attributes = tempEntity.Attributes;
+        }
+
         private void RemoveStateStausCode(Entity entity)
         {
-            if (entity.Contains(EntityNames.StateCode))
-                entity.Attributes.Remove(EntityNames.StateCode);
+            if (entity.Contains(Helpers.EntityNames.StateCode))
+                entity.Attributes.Remove(Helpers.EntityNames.StateCode);
 
-            if (entity.Contains(EntityNames.StatusCode))
-                entity.Attributes.Remove(EntityNames.StatusCode);
+            if (entity.Contains(Helpers.EntityNames.StatusCode))
+                entity.Attributes.Remove(Helpers.EntityNames.StatusCode);
         }
 
         private void btnCloneRecord_Click(object sender, EventArgs e)
@@ -313,12 +396,12 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
             if (typeCode == -1)
             {
-                throw new ArgumentException("EntityTypeCode can't be pasred from URL");
+                throw new ArgumentException("EntityTypeCode can't be parsed from URL");
             }
 
             if (RecordId == Guid.Empty)
             {
-                throw new ArgumentException("Entity Id can't be pasred from URL");
+                throw new ArgumentException("Entity Id can't be parsed from URL");
             }
 
             var metaDataRequest = new RetrieveAllEntitiesRequest();
@@ -335,7 +418,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
 
-            var errorLookups = new List<EntityReference>();
+            var missingEntityReferences = new List<EntityReference>();
 
             foreach (var eRef in allERefsAttributes)
             {
@@ -345,20 +428,21 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 }
                 catch
                 {
-                    errorLookups.Add((EntityReference)eRef.Value);
+                    missingEntityReferences.Add((EntityReference)eRef.Value);
                 }
             }
 
-            if (errorLookups.Any())
+            if (missingEntityReferences.Any())
             {
-                var message = "The following Lookups are not present in the Target Enviornment. Do you want to proceed?" + Environment.NewLine;
+                var strBuilder = new StringBuilder();
+                strBuilder.AppendLine("The following Lookups are not present in the Target Enviornment. Do you want to proceed?");
 
-                foreach (var error in errorLookups)
+                foreach (var missingEntityReference in missingEntityReferences)
                 {
-                    message += string.Format("LogicalName {0} Id {1} does not exist {2}", error.LogicalName, error.Id, Environment.NewLine);
+                    strBuilder.AppendLine($"LogicalName {missingEntityReference.LogicalName} Id {missingEntityReference.Id} does not exist");
                 }
 
-                return MessageBox.Show(message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+                return MessageBox.Show(strBuilder.ToString(), "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
             }
 
             return true;
@@ -366,13 +450,13 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private static void RemoveOwnerAndLastmodifed(Entity entity)
         {
-            if (entity.Contains(EntityNames.Owner))
+            if (entity.Contains(Helpers.EntityNames.Owner))
             {
-                entity.Attributes.Remove(EntityNames.Owner);
+                entity.Attributes.Remove(Helpers.EntityNames.Owner);
             }
-            if (entity.Contains(EntityNames.ModifiedBy))
+            if (entity.Contains(Helpers.EntityNames.ModifiedBy))
             {
-                entity.Attributes.Remove(EntityNames.ModifiedBy);
+                entity.Attributes.Remove(Helpers.EntityNames.ModifiedBy);
             }
         }
 
