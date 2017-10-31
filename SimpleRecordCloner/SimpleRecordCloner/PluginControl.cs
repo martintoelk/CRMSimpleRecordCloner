@@ -13,6 +13,7 @@ using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk.Messages;
 using System.ComponentModel;
 using System.Text;
+using System.Collections.Specialized;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
@@ -208,88 +209,142 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             var bw = (BackgroundWorker)sender;
             var current = 0;
+
             foreach (var targetService in targetServices)
             {
-                var metaDataRequest = new RetrieveAllEntitiesRequest();
-                metaDataRequest.RetrieveAsIfPublished = true;
-
-                var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
-
+                RetrieveAllEntitiesResponse SourceMetaData = GetMetaData();
                 lastTargetService = targetService;
 
-                var recordToProcess = (ListBox.ObjectCollection)e.Argument;
+                var recordUrlsToProcess = (ListBox.ObjectCollection)e.Argument;
 
-                foreach (var record in recordToProcess)
+                foreach (var recordUrl in recordUrlsToProcess)
                 {
                     current++;
-                    string logicalName;
-                    Guid id;
-                    GetParameterFromURL(record.ToString(), out logicalName, out id);
+                    var paramaters = GetParameterFromURL(recordUrl.ToString());
 
-                    var entity = service.Retrieve(logicalName, id, new ColumnSet(true));
+                    int objectTypeCode = int.Parse(GetParameter(paramaters, "etc").ToString());
+                    var RecordId = new Guid(GetParameter(paramaters, "id").ToString());
+                    var logicalName = GetEntityLogicalNameFromMetadataByObjectTypeCode(objectTypeCode);
 
-                    var displayName = entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
+                    var entity = service.Retrieve(logicalName, RecordId, new ColumnSet(true));
+
+                    string displayName = GetRecordDisplayName(SourceMetaData, logicalName, entity);
 
                     bw.ReportProgress(0, string.Format("Cloning Record {4} of {5}: Displayname \"{0}\" LogicalName \"{1}\" Id \"{2}\" to Environemt \"{3}\"",
                         displayName, entity.LogicalName, entity.Id, targetService.Key,
                         current,
-                        recordToProcess.Count * targetServices.Count()));
-                    
-                    entity.Attributes.Remove("traversedpath");
+                        recordUrlsToProcess.Count * targetServices.Count()));
 
-                    if (chkIgnoreAllLookups.Checked)
-                    {
-                        RemoveERefs(entity);
-                    }
-
-                    if (chkIgnoreOwnerAndModifiedBy.Checked)
-                    {
-                        RemoveOwnerAndLastmodifed(entity);
-                    }
-
-                    if (chkIgnoreStateCode.Checked)
-                    {
-                        RemoveStateStausCode(entity);
-                    }
-
-                    if (chkVerifyLookups.Checked)
-                    {
-                        if (!AreAllLookUpsPresent(entity))
-                        {
-                            return;
-                        }
-                    }
-
-                    if (chkRemoveNotFoundLookups.Checked)
-                    {
-                        RemoveNotFoundLookups(entity,targetService.Value);
-                    }
-
-                    if (chkRemoveNonExistingAttributes.Checked)
-                    {
-                        RemoveMissingAttributeInTargetEnvironment(entity, lastTargetService.Value);
-                    }
-
-                    if (chkUpsertRecords.Checked)
-                    {
-                        var primaryIdAttribute = SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryIdAttribute;
-
-                        entity.KeyAttributes.Add(primaryIdAttribute, entity.Id);
-
-                        var upsertReq = new UpsertRequest()
-                        {
-                            Target = entity
-                        };
-
-                        var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
-                        var created = resp.RecordCreated;
-                    }
-                    else
-                    {
-                        lastTargetService.Value.Create(entity);
-                    }
+                    ApplayCloneRulesAndCloneRecord(targetService, SourceMetaData, logicalName, entity);
                 }
             }
+        }
+
+        private bool ApplyAreAllLookupsPresent(Entity entity)
+        {
+            if (chkVerifyLookups.Checked)
+            {
+                return AreAllLookUpsPresent(entity);
+            }
+
+            return true;
+        }
+
+        private void ApplayCloneRulesAndCloneRecord(KeyValuePair<string, IOrganizationService> targetService, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        {
+            RemoveTraversedPathAttributeFromEntity(entity);
+            ApplyIgnoreAllLookups(entity);
+            ApplyIngoreOnwerModfiedBy(entity);
+            ApplyIgnoreStatusCode(entity);
+            ApplyRemoveNotFoundLookups(targetService, entity);
+            ApplyRemoveNonExistingAttributesInTargetOrganization(entity);
+
+            if (!ApplyAreAllLookupsPresent(entity))
+                return;
+            ApplyUpsertRecords(SourceMetaData, logicalName, entity);
+        }
+
+        private void ApplyUpsertRecords(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        {
+            if (chkUpsertRecords.Checked)
+            {
+                var primaryIdAttribute = SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryIdAttribute;
+
+                entity.KeyAttributes.Add(primaryIdAttribute, entity.Id);
+
+                var upsertReq = new UpsertRequest()
+                {
+                    Target = entity
+                };
+
+                var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
+                var created = resp.RecordCreated;
+            }
+            else
+            {
+                lastTargetService.Value.Create(entity);
+            }
+        }
+
+        private void ApplyRemoveNonExistingAttributesInTargetOrganization(Entity entity)
+        {
+            if (chkRemoveNonExistingAttributes.Checked)
+            {
+                RemoveMissingAttributeInTargetEnvironment(entity, lastTargetService.Value);
+            }
+        }
+
+        private void ApplyRemoveNotFoundLookups(KeyValuePair<string, IOrganizationService> targetService, Entity entity)
+        {
+            if (chkRemoveNotFoundLookups.Checked)
+            {
+                RemoveNotFoundLookups(entity, targetService.Value);
+            }
+        }
+
+        private void ApplyIgnoreStatusCode(Entity entity)
+        {
+            if (chkIgnoreStateCode.Checked)
+            {
+                RemoveStateStausCode(entity);
+            }
+        }
+
+        private void ApplyIngoreOnwerModfiedBy(Entity entity)
+        {
+            if (chkIgnoreOwnerAndModifiedBy.Checked)
+            {
+                RemoveOwnerAndLastmodifed(entity);
+            }
+        }
+
+        private static void RemoveTraversedPathAttributeFromEntity(Entity entity)
+        {
+            entity.Attributes.Remove("traversedpath");
+        }
+
+        private void ApplyIgnoreAllLookups(Entity entity)
+        {
+            if (chkIgnoreAllLookups.Checked)
+            {
+                RemoveERefs(entity);
+            }
+        }
+
+        private static string GetRecordDisplayName(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        {
+            return entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
+        }
+
+        private RetrieveAllEntitiesResponse GetMetaData()
+        {
+            var metaDataRequest = new RetrieveAllEntitiesRequest
+            {
+                RetrieveAsIfPublished = true
+            };
+
+            var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+            return SourceMetaData;
         }
 
         private void RemoveNotFoundLookups(Entity Entity, IOrganizationService TargetOrgSvc)
@@ -370,48 +425,60 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        private void GetParameterFromURL(string RecordUrl, out string LogicalName, out Guid RecordId)
+        private NameValueCollection GetParameterFromURL(string RecordUrl)
         {
-            Uri url;
-            Uri.TryCreate(RecordUrl, UriKind.Absolute, out url);
-            int typeCode = -1;
-            var query = url.Query.Replace("?", "");
-            RecordId = Guid.Empty;
+            Uri.TryCreate(RecordUrl, UriKind.Absolute, out Uri url);
+            var queryString = RecordUrl.Substring(RecordUrl.IndexOf('?')).Split('#')[0];
+            var parameters= System.Web.HttpUtility.ParseQueryString(queryString); ;
 
-            var parameters = query.Split('&').ToList();
+            return parameters;
+        }
 
-            foreach (var parameter in parameters)
+        private object GetParameter(NameValueCollection Parameters, string Parameter)
+        {
+            return Parameters[Parameter];
+        }
+
+        private string GetEntityLogicalNameFromMetadataByObjectTypeCode(int typeCode)
+        {
+            string LogicalName;
+            var metaDataRequest = new RetrieveAllEntitiesRequest
             {
-                var nameAndValue = parameter.Split('=');
-
-                if (nameAndValue[0] == "etc")
-                {
-                    typeCode = int.Parse(nameAndValue[1]);
-                }
-
-                if (nameAndValue[0] == "id")
-                {
-                    RecordId = new Guid(nameAndValue[1].Replace("%7b", "").Replace("%7d", ""));
-                }
-            }
-            if (typeCode == -1)
-            {
-                throw new ArgumentException("EntityTypeCode can't be parsed from URL");
-            }
-
-            if (RecordId == Guid.Empty)
-            {
-                throw new ArgumentException("Entity Id can't be parsed from URL");
-            }
-
-            var metaDataRequest = new RetrieveAllEntitiesRequest();
-            metaDataRequest.RetrieveAsIfPublished = true;
+                RetrieveAsIfPublished = true
+            };
 
             var metadata = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
 
             var targetEntity = metadata.EntityMetadata.FirstOrDefault(entity => entity.ObjectTypeCode == typeCode);
 
             LogicalName = targetEntity.LogicalName;
+            return LogicalName;
+        }
+
+        private static void ValidDateRecordId(Guid RecordId)
+        {
+            if (RecordId == Guid.Empty)
+            {
+                throw new ArgumentException("Entity Id can't be parsed from URL");
+            }
+        }
+
+        private static void ValidDateTypeCode(int typeCode)
+        {
+            if (typeCode == -1)
+            {
+                throw new ArgumentException("EntityTypeCode can't be parsed from URL");
+            }
+        }
+
+        private static List<string> GetParamtersFromUrl(string query)
+        {
+            return query.Split('&').ToList();
+        }
+
+        private static string ReplaceQuestionMark(Uri url)
+        {
+            return url.Query.Replace("?", "");
         }
 
         private bool AreAllLookUpsPresent(Entity Entity)
@@ -442,7 +509,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     strBuilder.AppendLine($"LogicalName {missingEntityReference.LogicalName} Id {missingEntityReference.Id} does not exist");
                 }
 
-                return MessageBox.Show(strBuilder.ToString(), "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+                return MessageBox.Show(strBuilder.ToString(), "Question do you want To Procced?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
             }
 
             return true;
@@ -478,17 +545,27 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private void btnAddToRecordList_Click(object sender, EventArgs e)
         {
-            var fileToAdd = txtRecordURL.Text.Replace("<", "").Replace(">", "");
+            string RecordUrlToAdd = CleanUpRecordUrl();
 
-            if (!string.IsNullOrWhiteSpace(fileToAdd))
+            if (IsValidUrl(RecordUrlToAdd))
             {
-                lstRecordsToProcess.Items.Add(fileToAdd);
+                lstRecordsToProcess.Items.Add(RecordUrlToAdd);
                 txtRecordURL.Text = string.Empty;
             }
             else
             {
                 MessageBox.Show("Url is not Valid!");
             }
+        }
+
+        private static bool IsValidUrl(string fileToAdd)
+        {
+            return !string.IsNullOrWhiteSpace(fileToAdd);
+        }
+
+        private string CleanUpRecordUrl()
+        {
+            return txtRecordURL.Text.Replace("<", "").Replace(">", "");
         }
 
         private void lstTargetEnvironments_SelectedIndexChanged(object sender, EventArgs e)
