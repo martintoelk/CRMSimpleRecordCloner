@@ -201,9 +201,9 @@
             this.chkRemoveNonExistingAttributes.AutoSize = true;
             this.chkRemoveNonExistingAttributes.Location = new System.Drawing.Point(20, 220);
             this.chkRemoveNonExistingAttributes.Name = "chkRemoveNonExistingAttributes";
-            this.chkRemoveNonExistingAttributes.Size = new System.Drawing.Size(257, 17);
+            this.chkRemoveNonExistingAttributes.Size = new System.Drawing.Size(248, 17);
             this.chkRemoveNonExistingAttributes.TabIndex = 16;
-            this.chkRemoveNonExistingAttributes.Text = "Remove missing Attributes in Traget Environment";
+            this.chkRemoveNonExistingAttributes.Text = "Ignore missing Fields in the Target Organization";
             this.chkRemoveNonExistingAttributes.UseVisualStyleBackColor = true;
             // 
             // chkUpsertRecords
@@ -221,9 +221,9 @@
             this.chkRemoveNotFoundLookups.AutoSize = true;
             this.chkRemoveNotFoundLookups.Location = new System.Drawing.Point(20, 244);
             this.chkRemoveNotFoundLookups.Name = "chkRemoveNotFoundLookups";
-            this.chkRemoveNotFoundLookups.Size = new System.Drawing.Size(315, 17);
+            this.chkRemoveNotFoundLookups.Size = new System.Drawing.Size(262, 17);
             this.chkRemoveNotFoundLookups.TabIndex = 18;
-            this.chkRemoveNotFoundLookups.Text = "Remove Lookups which are not present in the Target System";
+            this.chkRemoveNotFoundLookups.Text = "Ignore missing Lookups in the Target Organization";
             this.chkRemoveNotFoundLookups.UseVisualStyleBackColor = true;
             // 
             // PluginControl

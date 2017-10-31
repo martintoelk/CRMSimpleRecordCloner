@@ -200,7 +200,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
             else
             {
-                message = "Records where cloned successfully!";
+                message = "Finished Processing!";
                 MessageBox.Show(message, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
