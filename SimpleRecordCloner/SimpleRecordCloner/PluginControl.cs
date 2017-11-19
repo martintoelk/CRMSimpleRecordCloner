@@ -235,24 +235,24 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                         current,
                         recordUrlsToProcess.Count * targetServices.Count()));
 
-                    ApplyCloneRulesAndCloneRecord(targetService, SourceMetaData, logicalName, entity);
+                    ApplyCloneRulesAndCloneRecord(targetService.Value, SourceMetaData, logicalName, entity);
                 }
             }
         }
 
 
-        private void ApplyCloneRulesAndCloneRecord(KeyValuePair<string, IOrganizationService> targetService, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        private void ApplyCloneRulesAndCloneRecord(IOrganizationService TargetOrgSvc, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity RecordToClone)
         {
-            RemoveTraversedPathAttributeFromEntity(entity);
-            ApplyRemoveAllERefsRule(entity);
-            ApplyIngoreOnwerModfiedByRule(entity);
-            ApplyIgnoreStatusCodeRule(entity);
-            ApplyRemoveNotFoundLookupsRule(targetService, entity);
-            ApplyRemoveNonExistingAttributesInTargetOrganizationRule(entity);
+            RemoveTraversedPathAttributeFromEntity(RecordToClone);
+            ApplyRemoveAllERefsRule(RecordToClone);
+            ApplyIngoreOnwerModfiedByRule(RecordToClone);
+            ApplyIgnoreStatusCodeRule(RecordToClone);
+            ApplyRemoveNotFoundLookupsRule(TargetOrgSvc, RecordToClone);
+            ApplyRemoveNonExistingAttributesInTargetOrganizationRule(RecordToClone);
 
-            if (!ApplyAreAllLookupsPresentRule(entity))
+            if (!ApplyAreAllLookupsPresentRule(TargetOrgSvc, RecordToClone))
                 return;
-            ApplyUpsertRecords(SourceMetaData, logicalName, entity);
+            ApplyUpsertRecords(SourceMetaData, logicalName, RecordToClone);
         }
 
         private void RemoveAttributesFromRecord(List<string> Attributes, Entity Record)
@@ -296,26 +296,38 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 RemoveAttributesFromRecord(new List<string> { Helpers.EntityNames.StateCode, Helpers.EntityNames.StatusCode }, entity);
             }
         }
-        
-        private void ApplyRemoveNotFoundLookupsRule(KeyValuePair<string, IOrganizationService> TargetOrgSvc, Entity Entity)
+
+        private void ApplyRemoveNotFoundLookupsRule(IOrganizationService TargetOrgSvc, Entity Entity)
         {
             if (chkRemoveNotFoundLookups.Checked)
             {
-                var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
+                List<EntityReference> notFoundERefs = GetERefsWhichNotExistsInTargetEnvironment(TargetOrgSvc, Entity);
 
-                allERefsAttributes.ForEach(eRefAttribute =>
-                {
-                    try
-                    {
-                        var eRef = (EntityReference)eRefAttribute.Value;
-                        var entity = TargetOrgSvc.Value.Retrieve(eRef.LogicalName, eRef.Id, new ColumnSet(false));
-                    }
-                    catch
-                    {
-                        RemoveAttributesFromRecord(new List<string> { eRefAttribute.Key }, Entity);
-                    }
-                });
+                RemoveAttributesFromRecord(notFoundERefs.Select(x => x.Name).ToList(), Entity);
             }
+        }
+
+        private static List<EntityReference> GetERefsWhichNotExistsInTargetEnvironment(IOrganizationService TargetOrgSvc, Entity Entity)
+        {
+            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
+
+            var notFoundERefs = new List<EntityReference>();
+
+            allERefsAttributes.ForEach(eRefAttribute =>
+            {
+
+                EntityReference eRef = new EntityReference();
+                try
+                {
+                    eRef = (EntityReference)eRefAttribute.Value;
+                    var entity = TargetOrgSvc.Retrieve(eRef.LogicalName, eRef.Id, new ColumnSet(false));
+                }
+                catch
+                {
+                    notFoundERefs.Add(eRef);
+                }
+            });
+            return notFoundERefs;
         }
 
         private void ApplyRemoveNonExistingAttributesInTargetOrganizationRule(Entity entity)
@@ -364,33 +376,19 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             Entity.Attributes = tempEntity.Attributes;
         }
 
-        private bool ApplyAreAllLookupsPresentRule(Entity entity)
+        private bool ApplyAreAllLookupsPresentRule(IOrganizationService TargetOrgSvc, Entity entity)
         {
             if (chkVerifyLookups.Checked)
             {
-                return AreAllLookUpsPresent(entity);
+                return AreAllLookUpsPresent(TargetOrgSvc, entity);
             }
 
             return true;
         }
 
-        private bool AreAllLookUpsPresent(Entity Entity)
+        private bool AreAllLookUpsPresent(IOrganizationService TargetOrgSvc, Entity Entity)
         {
-            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
-
-            var missingEntityReferences = new List<EntityReference>();
-
-            foreach (var eRef in allERefsAttributes)
-            {
-                try
-                {
-                    var targetEntity = lastTargetService.Value.Retrieve(((EntityReference)eRef.Value).LogicalName, ((EntityReference)eRef.Value).Id, new ColumnSet());
-                }
-                catch
-                {
-                    missingEntityReferences.Add((EntityReference)eRef.Value);
-                }
-            }
+            var missingEntityReferences = GetERefsWhichNotExistsInTargetEnvironment(TargetOrgSvc, Entity);
 
             if (missingEntityReferences.Any())
             {
@@ -430,7 +428,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        private static string GetRecordDisplayName(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        private string GetRecordDisplayName(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
         {
             return entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
         }
