@@ -235,58 +235,90 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                         current,
                         recordUrlsToProcess.Count * targetServices.Count()));
 
-                    ApplayCloneRulesAndCloneRecord(targetService, SourceMetaData, logicalName, entity);
+                    ApplyCloneRulesAndCloneRecord(targetService, SourceMetaData, logicalName, entity);
                 }
             }
         }
 
-        private bool ApplyAreAllLookupsPresent(Entity entity)
-        {
-            if (chkVerifyLookups.Checked)
-            {
-                return AreAllLookUpsPresent(entity);
-            }
 
-            return true;
-        }
-
-        private void ApplayCloneRulesAndCloneRecord(KeyValuePair<string, IOrganizationService> targetService, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        private void ApplyCloneRulesAndCloneRecord(KeyValuePair<string, IOrganizationService> targetService, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
         {
             RemoveTraversedPathAttributeFromEntity(entity);
-            ApplyIgnoreAllLookups(entity);
-            ApplyIngoreOnwerModfiedBy(entity);
-            ApplyIgnoreStatusCode(entity);
-            ApplyRemoveNotFoundLookups(targetService, entity);
-            ApplyRemoveNonExistingAttributesInTargetOrganization(entity);
+            ApplyRemoveAllERefsRule(entity);
+            ApplyIngoreOnwerModfiedByRule(entity);
+            ApplyIgnoreStatusCodeRule(entity);
+            ApplyRemoveNotFoundLookupsRule(targetService, entity);
+            ApplyRemoveNonExistingAttributesInTargetOrganizationRule(entity);
 
-            if (!ApplyAreAllLookupsPresent(entity))
+            if (!ApplyAreAllLookupsPresentRule(entity))
                 return;
             ApplyUpsertRecords(SourceMetaData, logicalName, entity);
         }
 
-        private void ApplyUpsertRecords(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        private void RemoveAttributesFromRecord(List<string> Attributes, Entity Record)
         {
-            if (chkUpsertRecords.Checked)
+            Attributes.ForEach(attribute =>
             {
-                var primaryIdAttribute = SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryIdAttribute;
 
-                entity.KeyAttributes.Add(primaryIdAttribute, entity.Id);
+                if (Record.Contains(attribute))
+                    Record.Attributes.Remove(attribute);
+            });
+        }
 
-                var upsertReq = new UpsertRequest()
-                {
-                    Target = entity
-                };
+        private void RemoveTraversedPathAttributeFromEntity(Entity entity)
+        {
+            RemoveAttributesFromRecord(new List<string> { "traversedpath" }, entity);
+        }
 
-                var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
-                var created = resp.RecordCreated;
-            }
-            else
+        private void ApplyRemoveAllERefsRule(Entity entity)
+        {
+            if (chkIgnoreAllLookups.Checked)
             {
-                lastTargetService.Value.Create(entity);
+                RemoveAttributesFromRecord(
+                    entity.Attributes.Where(attribute => attribute.Value.GetType().Name != "EntityReference")
+                    .Select(attribute => attribute.Key).ToList()
+                    , entity);
             }
         }
 
-        private void ApplyRemoveNonExistingAttributesInTargetOrganization(Entity entity)
+        private void ApplyIngoreOnwerModfiedByRule(Entity entity)
+        {
+            if (chkIgnoreOwnerAndModifiedBy.Checked)
+            {
+                RemoveAttributesFromRecord(new List<string> { Helpers.EntityNames.Owner, Helpers.EntityNames.ModifiedBy }, entity);
+            }
+        }
+
+        private void ApplyIgnoreStatusCodeRule(Entity entity)
+        {
+            if (chkIgnoreStateCode.Checked)
+            {
+                RemoveAttributesFromRecord(new List<string> { Helpers.EntityNames.StateCode, Helpers.EntityNames.StatusCode }, entity);
+            }
+        }
+        
+        private void ApplyRemoveNotFoundLookupsRule(KeyValuePair<string, IOrganizationService> TargetOrgSvc, Entity Entity)
+        {
+            if (chkRemoveNotFoundLookups.Checked)
+            {
+                var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
+
+                allERefsAttributes.ForEach(eRefAttribute =>
+                {
+                    try
+                    {
+                        var eRef = (EntityReference)eRefAttribute.Value;
+                        var entity = TargetOrgSvc.Value.Retrieve(eRef.LogicalName, eRef.Id, new ColumnSet(false));
+                    }
+                    catch
+                    {
+                        RemoveAttributesFromRecord(new List<string> { eRefAttribute.Key }, Entity);
+                    }
+                });
+            }
+        }
+
+        private void ApplyRemoveNonExistingAttributesInTargetOrganizationRule(Entity entity)
         {
             if (chkRemoveNonExistingAttributes.Checked)
             {
@@ -294,83 +326,14 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        private void ApplyRemoveNotFoundLookups(KeyValuePair<string, IOrganizationService> targetService, Entity entity)
-        {
-            if (chkRemoveNotFoundLookups.Checked)
-            {
-                RemoveNotFoundLookups(entity, targetService.Value);
-            }
-        }
-
-        private void ApplyIgnoreStatusCode(Entity entity)
-        {
-            if (chkIgnoreStateCode.Checked)
-            {
-                RemoveStateStausCode(entity);
-            }
-        }
-
-        private void ApplyIngoreOnwerModfiedBy(Entity entity)
-        {
-            if (chkIgnoreOwnerAndModifiedBy.Checked)
-            {
-                RemoveOwnerAndLastmodifed(entity);
-            }
-        }
-
-        private static void RemoveTraversedPathAttributeFromEntity(Entity entity)
-        {
-            entity.Attributes.Remove("traversedpath");
-        }
-
-        private void ApplyIgnoreAllLookups(Entity entity)
-        {
-            if (chkIgnoreAllLookups.Checked)
-            {
-                RemoveERefs(entity);
-            }
-        }
-
-        private static string GetRecordDisplayName(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
-        {
-            return entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
-        }
-
-        private RetrieveAllEntitiesResponse GetMetaData()
-        {
-            var metaDataRequest = new RetrieveAllEntitiesRequest
-            {
-                RetrieveAsIfPublished = true
-            };
-
-            var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
-            return SourceMetaData;
-        }
-
-        private void RemoveNotFoundLookups(Entity Entity, IOrganizationService TargetOrgSvc)
-        {
-            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
-
-            allERefsAttributes.ForEach(eRefAttribute =>
-            {
-                try
-                {
-                    var eRef = (EntityReference)eRefAttribute.Value;
-                    var entity = TargetOrgSvc.Retrieve(eRef.LogicalName, eRef.Id, new ColumnSet(false));
-                }
-                catch
-                {
-                    Entity.Attributes.Remove(eRefAttribute.Key);
-                }
-            });
-        }
-
         private void RemoveMissingAttributeInTargetEnvironment(Entity Entity, IOrganizationService TragetOrgService)
         {
-            var entityMetaData = new RetrieveEntityRequest();
-            entityMetaData.RetrieveAsIfPublished = true;
-            entityMetaData.EntityFilters = Microsoft.Xrm.Sdk.Metadata.EntityFilters.Attributes;
-            entityMetaData.LogicalName = Entity.LogicalName;
+            var entityMetaData = new RetrieveEntityRequest
+            {
+                RetrieveAsIfPublished = true,
+                EntityFilters = Microsoft.Xrm.Sdk.Metadata.EntityFilters.Attributes,
+                LogicalName = Entity.LogicalName
+            };
 
             var SourceMetaData = (RetrieveEntityResponse)TragetOrgService.Execute(entityMetaData);
 
@@ -401,13 +364,86 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             Entity.Attributes = tempEntity.Attributes;
         }
 
-        private void RemoveStateStausCode(Entity entity)
+        private bool ApplyAreAllLookupsPresentRule(Entity entity)
         {
-            if (entity.Contains(Helpers.EntityNames.StateCode))
-                entity.Attributes.Remove(Helpers.EntityNames.StateCode);
+            if (chkVerifyLookups.Checked)
+            {
+                return AreAllLookUpsPresent(entity);
+            }
 
-            if (entity.Contains(Helpers.EntityNames.StatusCode))
-                entity.Attributes.Remove(Helpers.EntityNames.StatusCode);
+            return true;
+        }
+
+        private bool AreAllLookUpsPresent(Entity Entity)
+        {
+            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
+
+            var missingEntityReferences = new List<EntityReference>();
+
+            foreach (var eRef in allERefsAttributes)
+            {
+                try
+                {
+                    var targetEntity = lastTargetService.Value.Retrieve(((EntityReference)eRef.Value).LogicalName, ((EntityReference)eRef.Value).Id, new ColumnSet());
+                }
+                catch
+                {
+                    missingEntityReferences.Add((EntityReference)eRef.Value);
+                }
+            }
+
+            if (missingEntityReferences.Any())
+            {
+                var strBuilder = new StringBuilder();
+                strBuilder.AppendLine("The following Lookups are not present in the Target Enviornment. Do you want to proceed?");
+
+                foreach (var missingEntityReference in missingEntityReferences)
+                {
+                    strBuilder.AppendLine($"LogicalName {missingEntityReference.LogicalName} Id {missingEntityReference.Id} does not exist");
+                }
+
+                return MessageBox.Show(strBuilder.ToString(), "Question do you want To Procced?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+            }
+
+            return true;
+        }
+
+        private void ApplyUpsertRecords(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        {
+            if (chkUpsertRecords.Checked)
+            {
+                var primaryIdAttribute = SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryIdAttribute;
+
+                entity.KeyAttributes.Add(primaryIdAttribute, entity.Id);
+
+                var upsertReq = new UpsertRequest()
+                {
+                    Target = entity
+                };
+
+                var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
+                var created = resp.RecordCreated;
+            }
+            else
+            {
+                lastTargetService.Value.Create(entity);
+            }
+        }
+
+        private static string GetRecordDisplayName(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity entity)
+        {
+            return entity.GetAttributeValue<string>(SourceMetaData.EntityMetadata.First(entityMetaData => entityMetaData.LogicalName == logicalName).PrimaryNameAttribute);
+        }
+
+        private RetrieveAllEntitiesResponse GetMetaData()
+        {
+            var metaDataRequest = new RetrieveAllEntitiesRequest
+            {
+                RetrieveAsIfPublished = true
+            };
+
+            var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+            return SourceMetaData;
         }
 
         private void btnCloneRecord_Click(object sender, EventArgs e)
@@ -429,7 +465,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             Uri.TryCreate(RecordUrl, UriKind.Absolute, out Uri url);
             var queryString = RecordUrl.Substring(RecordUrl.IndexOf('?')).Split('#')[0];
-            var parameters= System.Web.HttpUtility.ParseQueryString(queryString); ;
+            var parameters = System.Web.HttpUtility.ParseQueryString(queryString); ;
 
             return parameters;
         }
@@ -481,59 +517,11 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             return url.Query.Replace("?", "");
         }
 
-        private bool AreAllLookUpsPresent(Entity Entity)
-        {
-            var allERefsAttributes = Entity.Attributes.Where(attribute => attribute.Value.GetType().Name == "EntityReference").ToList();
 
-            var missingEntityReferences = new List<EntityReference>();
 
-            foreach (var eRef in allERefsAttributes)
-            {
-                try
-                {
-                    var targetEntity = lastTargetService.Value.Retrieve(((EntityReference)eRef.Value).LogicalName, ((EntityReference)eRef.Value).Id, new ColumnSet());
-                }
-                catch
-                {
-                    missingEntityReferences.Add((EntityReference)eRef.Value);
-                }
-            }
 
-            if (missingEntityReferences.Any())
-            {
-                var strBuilder = new StringBuilder();
-                strBuilder.AppendLine("The following Lookups are not present in the Target Enviornment. Do you want to proceed?");
 
-                foreach (var missingEntityReference in missingEntityReferences)
-                {
-                    strBuilder.AppendLine($"LogicalName {missingEntityReference.LogicalName} Id {missingEntityReference.Id} does not exist");
-                }
 
-                return MessageBox.Show(strBuilder.ToString(), "Question do you want To Procced?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
-            }
-
-            return true;
-        }
-
-        private static void RemoveOwnerAndLastmodifed(Entity entity)
-        {
-            if (entity.Contains(Helpers.EntityNames.Owner))
-            {
-                entity.Attributes.Remove(Helpers.EntityNames.Owner);
-            }
-            if (entity.Contains(Helpers.EntityNames.ModifiedBy))
-            {
-                entity.Attributes.Remove(Helpers.EntityNames.ModifiedBy);
-            }
-        }
-
-        private static void RemoveERefs(Entity entity)
-        {
-            var allAttributesWithOutERefs = entity.Attributes.Where(attribute => attribute.Value.GetType().Name != "EntityReference").ToList();
-
-            entity.Attributes = new Microsoft.Xrm.Sdk.AttributeCollection();
-            entity.Attributes.AddRange(allAttributesWithOutERefs);
-        }
 
         private void chkVerifyLookups_CheckedChanged(object sender, EventArgs e)
         {
