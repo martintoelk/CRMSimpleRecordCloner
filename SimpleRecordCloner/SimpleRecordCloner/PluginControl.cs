@@ -222,9 +222,14 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     current++;
                     var paramaters = GetParameterFromURL(recordUrl.ToString());
 
-                    int objectTypeCode = int.Parse(GetParameter(paramaters, "etc").ToString());
                     var RecordId = new Guid(GetParameter(paramaters, "id").ToString());
-                    var logicalName = GetEntityLogicalNameFromMetadataByObjectTypeCode(objectTypeCode);
+                    var logicalName = GetParameter(paramaters, "etn")?.ToString();
+                    if (logicalName == null)
+                    {
+                        // fallback if the URL was generated through an oder Dynamics version
+                        int objectTypeCode = int.Parse(GetParameter(paramaters, "etc").ToString());
+                        logicalName = GetEntityLogicalNameFromMetadataByObjectTypeCode(objectTypeCode);
+                    }
 
                     var entity = service.Retrieve(logicalName, RecordId, new ColumnSet(true));
 
