@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginControl));
             this.btnChooseTarget = new System.Windows.Forms.Button();
-            this.lstTargetEnvironments = new System.Windows.Forms.ListView();
             this.lblSource = new System.Windows.Forms.Label();
             this.lblRecordURL = new System.Windows.Forms.Label();
             this.txtRecordURL = new System.Windows.Forms.TextBox();
@@ -47,6 +46,7 @@
             this.chkRemoveNonExistingAttributes = new System.Windows.Forms.CheckBox();
             this.chkUpsertRecords = new System.Windows.Forms.CheckBox();
             this.chkRemoveNotFoundLookups = new System.Windows.Forms.CheckBox();
+            this.listBoxTargetEnv = new System.Windows.Forms.ListBox();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,16 +59,6 @@
             this.btnChooseTarget.Text = "Choose Target";
             this.btnChooseTarget.UseVisualStyleBackColor = true;
             this.btnChooseTarget.Click += new System.EventHandler(this.btnChooseTarget_Click);
-            // 
-            // lstTargetEnvironments
-            // 
-            this.lstTargetEnvironments.Location = new System.Drawing.Point(135, 287);
-            this.lstTargetEnvironments.Name = "lstTargetEnvironments";
-            this.lstTargetEnvironments.Size = new System.Drawing.Size(293, 22);
-            this.lstTargetEnvironments.TabIndex = 1;
-            this.lstTargetEnvironments.UseCompatibleStateImageBehavior = false;
-            this.lstTargetEnvironments.SelectedIndexChanged += new System.EventHandler(this.lstTargetEnvironments_SelectedIndexChanged);
-            this.lstTargetEnvironments.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstTargetEnvironments_KeyDown);
             // 
             // lblSource
             // 
@@ -226,10 +216,20 @@
             this.chkRemoveNotFoundLookups.Text = "Ignore missing Lookups in the Target Organization";
             this.chkRemoveNotFoundLookups.UseVisualStyleBackColor = true;
             // 
+            // listBoxTargetEnv
+            // 
+            this.listBoxTargetEnv.FormattingEnabled = true;
+            this.listBoxTargetEnv.Location = new System.Drawing.Point(215, 264);
+            this.listBoxTargetEnv.Name = "listBoxTargetEnv";
+            this.listBoxTargetEnv.Size = new System.Drawing.Size(288, 95);
+            this.listBoxTargetEnv.TabIndex = 19;
+            this.listBoxTargetEnv.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstTargetEnvironments_KeyDown);
+            // 
             // PluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.listBoxTargetEnv);
             this.Controls.Add(this.chkRemoveNotFoundLookups);
             this.Controls.Add(this.chkUpsertRecords);
             this.Controls.Add(this.chkRemoveNonExistingAttributes);
@@ -245,7 +245,6 @@
             this.Controls.Add(this.txtRecordURL);
             this.Controls.Add(this.lblRecordURL);
             this.Controls.Add(this.lblSource);
-            this.Controls.Add(this.lstTargetEnvironments);
             this.Controls.Add(this.btnChooseTarget);
             this.Name = "PluginControl";
             this.Size = new System.Drawing.Size(543, 412);
@@ -259,7 +258,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnChooseTarget;
-        private System.Windows.Forms.ListView lstTargetEnvironments;
         private System.Windows.Forms.Label lblSource;
         private System.Windows.Forms.Label lblRecordURL;
         private System.Windows.Forms.TextBox txtRecordURL;
@@ -276,5 +274,6 @@
         private System.Windows.Forms.CheckBox chkRemoveNonExistingAttributes;
         private System.Windows.Forms.CheckBox chkUpsertRecords;
         private System.Windows.Forms.CheckBox chkRemoveNotFoundLookups;
+        private System.Windows.Forms.ListBox listBoxTargetEnv;
     }
 }

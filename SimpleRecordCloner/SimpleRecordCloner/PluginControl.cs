@@ -1,5 +1,4 @@
-﻿using Microsoft.Crm.Sdk.Messages;
-using System;
+﻿using System;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Interfaces;
@@ -14,16 +13,15 @@ using Microsoft.Xrm.Sdk.Messages;
 using System.ComponentModel;
 using System.Text;
 using System.Collections.Specialized;
+using Microsoft.Xrm.Tooling.Connector;
 
 namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 {
-    public partial class PluginControl : PluginControlBase, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
+    public partial class PluginControl : MultipleConnectionsPluginControlBase, IXrmToolBoxPluginControl, IGitHubPlugin, IStatusBarMessenger, IHelpPlugin
     {
-        private ConnectionDetail detail;
         private Panel infoPanel;
-        private IOrganizationService service;
-        private Dictionary<string, IOrganizationService> targetServices = new Dictionary<string, IOrganizationService>();
-        private KeyValuePair<string, IOrganizationService> lastTargetService;
+
+        public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
 
         public string RepositoryName
         {
@@ -49,18 +47,6 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        public IOrganizationService Service
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-        #region XrmToolbox
-        public event EventHandler OnRequestConnection;
-        #endregion XrmToolbox
-
-
         private void SetConnectionLabel(ConnectionDetail detail, string serviceType)
         {
             switch (serviceType)
@@ -72,22 +58,21 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             }
         }
 
-        public void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
+        public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName = "", object parameter = null)
         {
-            this.detail = detail;
-            if (actionName == "TargetOrganization")
+            ConnectionDetail = detail;
+            if (actionName == "AdditionalOrganization")
             {
-                targetServices.Add(detail.ConnectionName, newService);
-                lastTargetService = new KeyValuePair<string, IOrganizationService>(detail.ConnectionName, newService);
-                lstTargetEnvironments.Items.Add(new ListViewItem { Text = detail.ConnectionName });
+                AdditionalConnectionDetails.Clear();
+                AdditionalConnectionDetails.Add(detail);
+                SetConnectionLabel(detail, "Target");
             }
             else
             {
-                service = newService;
-
                 SetConnectionLabel(detail, "Source");
-
             }
+
+            base.UpdateConnection(newService, detail, actionName, parameter);
         }
 
         #region Base tool implementation
@@ -97,19 +82,12 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             InitializeComponent();
         }
 
-        public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
-        public event EventHandler OnCloseTool;
-
 
         #endregion Base tool implementation
 
         private void btnChooseTarget_Click(object sender, EventArgs e)
         {
-            if (OnRequestConnection != null)
-            {
-                var args = new RequestConnectionEventArgs { ActionName = "TargetOrganization", Control = this };
-                OnRequestConnection(this, args);
-            }
+            AddAdditionalOrganization();
         }
         private void chkIgnoreAllLookups_CheckedChanged(object sender, EventArgs e)
         {
@@ -128,29 +106,17 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         private void lstTargetEnvironments_KeyDown(object sender, KeyEventArgs e)
         {
-            if (lstTargetEnvironments.SelectedItems.Count > 0 && e.KeyCode == Keys.Delete)
+            if (listBoxTargetEnv.SelectedItems.Count > 0 && e.KeyCode == Keys.Delete)
             {
-                foreach (ListViewItem item in lstTargetEnvironments.Items)
+                var conn = listBoxTargetEnv.SelectedItem as ConnectionDetail;
+
+                if (conn != null)
                 {
-                    if (item.Selected)
-                        lstTargetEnvironments.Items.Remove(item);
+                    RemoveAdditionalOrganization(conn);
                 }
-
-                ReorderTargetServices();
             }
         }
 
-        private void ReorderTargetServices()
-        {
-            var oldTargetServices = targetServices;
-            targetServices = new Dictionary<string, IOrganizationService>();
-
-            foreach (ListViewItem item in lstTargetEnvironments.Items)
-            {
-                var serviceToAdd = oldTargetServices.First(x => x.Key == item.Text);
-                targetServices.Add(serviceToAdd.Key, serviceToAdd.Value);
-            }
-        }
 
         private void ToggleWaitMode(bool on)
         {
@@ -210,10 +176,12 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             var bw = (BackgroundWorker)sender;
             var current = 0;
 
-            foreach (var targetService in targetServices)
+            foreach (var connectioNDetail in AdditionalConnectionDetails)
             {
+                var targetService = connectioNDetail.GetCrmServiceClient();
+
                 RetrieveAllEntitiesResponse SourceMetaData = GetMetaData();
-                lastTargetService = targetService;
+                //  lastTargetService = targetService;
 
                 var recordUrlsToProcess = (ListBox.ObjectCollection)e.Argument;
 
@@ -231,33 +199,32 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                         logicalName = GetEntityLogicalNameFromMetadataByObjectTypeCode(objectTypeCode);
                     }
 
-                    var entity = service.Retrieve(logicalName, RecordId, new ColumnSet(true));
+                    var entity = Service.Retrieve(logicalName, RecordId, new ColumnSet(true));
 
                     string displayName = GetRecordDisplayName(SourceMetaData, logicalName, entity);
 
                     bw.ReportProgress(0, string.Format("Cloning Record {4} of {5}: Displayname \"{0}\" LogicalName \"{1}\" Id \"{2}\" to Environemt \"{3}\"",
-                        displayName, entity.LogicalName, entity.Id, targetService.Key,
+                        displayName, entity.LogicalName, entity.Id, targetService.ConnectedOrgFriendlyName,
                         current,
-                        recordUrlsToProcess.Count * targetServices.Count()));
+                        recordUrlsToProcess.Count * AdditionalConnectionDetails.Count()));
 
-                    ApplyCloneRulesAndCloneRecord(targetService.Value, SourceMetaData, logicalName, entity);
+                    ApplyCloneRulesAndCloneRecord(targetService, SourceMetaData, logicalName, entity);
                 }
             }
         }
 
-
-        private void ApplyCloneRulesAndCloneRecord(IOrganizationService TargetOrgSvc, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity RecordToClone)
+        private void ApplyCloneRulesAndCloneRecord(CrmServiceClient TargetOrgSvc, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity RecordToClone)
         {
             RemoveTraversedPathAttributeFromEntity(RecordToClone);
             ApplyRemoveAllERefsRule(RecordToClone);
             ApplyIngoreOnwerModfiedByRule(RecordToClone);
             ApplyIgnoreStatusCodeRule(RecordToClone);
             ApplyRemoveNotFoundLookupsRule(TargetOrgSvc, RecordToClone);
-            ApplyRemoveNonExistingAttributesInTargetOrganizationRule(RecordToClone);
+            ApplyRemoveNonExistingAttributesInTargetOrganizationRule(TargetOrgSvc, RecordToClone);
 
             if (!ApplyAreAllLookupsPresentRule(TargetOrgSvc, RecordToClone))
                 return;
-            ApplyUpsertRecords(SourceMetaData, logicalName, RecordToClone);
+            ApplyUpsertRecords(TargetOrgSvc, SourceMetaData, logicalName, RecordToClone);
         }
 
         private void RemoveAttributesFromRecord(List<string> Attributes, Entity RecordToClone)
@@ -339,15 +306,15 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             return notFoundERefs;
         }
 
-        private void ApplyRemoveNonExistingAttributesInTargetOrganizationRule(Entity RecordToClone)
+        private void ApplyRemoveNonExistingAttributesInTargetOrganizationRule(CrmServiceClient TragetOrgService, Entity RecordToClone)
         {
             if (chkRemoveNonExistingAttributes.Checked)
             {
-                RemoveMissingAttributeInTargetEnvironment(lastTargetService.Value, RecordToClone);
+                RemoveMissingAttributeInTargetEnvironment(TragetOrgService, RecordToClone);
             }
         }
 
-        private void RemoveMissingAttributeInTargetEnvironment(IOrganizationService TragetOrgService, Entity RecordToClone)
+        private void RemoveMissingAttributeInTargetEnvironment(CrmServiceClient TragetOrgService, Entity RecordToClone)
         {
             var entityMetaData = new RetrieveEntityRequest
             {
@@ -385,7 +352,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             RecordToClone.Attributes = tempEntity.Attributes;
         }
 
-        private bool ApplyAreAllLookupsPresentRule(IOrganizationService TargetOrgSvc, Entity RecordToClone)
+        private bool ApplyAreAllLookupsPresentRule(CrmServiceClient TargetOrgSvc, Entity RecordToClone)
         {
             if (chkVerifyLookups.Checked)
             {
@@ -395,7 +362,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             return true;
         }
 
-        private bool AreAllLookUpsPresent(IOrganizationService TargetOrgSvc, Entity RecordToClone)
+        private bool AreAllLookUpsPresent(CrmServiceClient TargetOrgSvc, Entity RecordToClone)
         {
             var missingEntityReferences = GetERefsWhichNotExistsInTargetEnvironment(TargetOrgSvc, RecordToClone);
 
@@ -415,7 +382,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             return true;
         }
 
-        private void ApplyUpsertRecords(RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity RecordToClone)
+        private void ApplyUpsertRecords(CrmServiceClient orgService, RetrieveAllEntitiesResponse SourceMetaData, string logicalName, Entity RecordToClone)
         {
             if (chkUpsertRecords.Checked)
             {
@@ -428,12 +395,12 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                     Target = RecordToClone
                 };
 
-                var resp = (UpsertResponse)lastTargetService.Value.Execute(upsertReq);
+                var resp = (UpsertResponse)orgService.Execute(upsertReq);
                 var created = resp.RecordCreated;
             }
             else
             {
-                lastTargetService.Value.Create(RecordToClone);
+                orgService.Create(RecordToClone);
             }
         }
 
@@ -449,7 +416,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 RetrieveAsIfPublished = true
             };
 
-            var SourceMetaData = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+            var SourceMetaData = (RetrieveAllEntitiesResponse)Service.Execute(metaDataRequest);
             return SourceMetaData;
         }
 
@@ -490,7 +457,7 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
                 RetrieveAsIfPublished = true
             };
 
-            var metadata = (RetrieveAllEntitiesResponse)service.Execute(metaDataRequest);
+            var metadata = (RetrieveAllEntitiesResponse)Service.Execute(metaDataRequest);
 
             var targetEntity = metadata.EntityMetadata.FirstOrDefault(entity => entity.ObjectTypeCode == typeCode);
 
@@ -523,12 +490,6 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
         {
             return url.Query.Replace("?", "");
         }
-
-
-
-
-
-
 
         private void chkVerifyLookups_CheckedChanged(object sender, EventArgs e)
         {
@@ -568,20 +529,9 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
 
         }
 
-        public void ClosingPlugin(PluginCloseInfo info)
-        {
-            //info.Cancel = MessageBox.Show(@"Are you sure you want to close this tab?", @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes;
-        }
-
         private void btnClose_Click(object sender, EventArgs e)
         {
-            if (OnCloseTool != null)
-            {
-                const string message = "Are you sure to exit?";
-                if (MessageBox.Show(message, "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                    DialogResult.Yes)
-                    OnCloseTool(this, null);
-            }
+
         }
 
         private void lstRecordsToProcess_KeyDown(object sender, KeyEventArgs e)
@@ -590,6 +540,14 @@ namespace martintmg.MSDYN.Tools.SimpleRecordCloner
             {
                 lstRecordsToProcess.Items.Remove(lstRecordsToProcess.SelectedItem);
             }
+        }
+
+        protected override void ConnectionDetailsUpdated(NotifyCollectionChangedEventArgs e)
+        {
+            listBoxTargetEnv.DataSource = null;
+            listBoxTargetEnv.DataSource = AdditionalConnectionDetails.ToList();
+            listBoxTargetEnv.DisplayMember = "ConnectionName";
+            listBoxTargetEnv.ValueMember = "ConnectionId";
         }
     }
 }

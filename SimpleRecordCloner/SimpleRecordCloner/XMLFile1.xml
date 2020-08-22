@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>martintmg.MSDYN.Tools.SimpleRecordCloner</id>
-    <version>0.1.0</version>
+    <version>1.0.0</version>
     <title>CRM Simple Record Cloner</title>
     <authors>Martin Tölk</authors>
     <owners>Martin Tölk</owners>
